@@ -2,10 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>APEX CAPITAL — Investment Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@300;400;500&family=Libre+Baskerville:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+
+<!-- FAVICON SVG inline -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23080c10'/%3E%3Cpolygon points='32,8 58,52 6,52' fill='none' stroke='%23c9a84c' stroke-width='3'/%3E%3Ccircle cx='32' cy='34' r='6' fill='%23c9a84c'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23080c10'/%3E%3Cpolygon points='32,8 58,52 6,52' fill='none' stroke='%23c9a84c' stroke-width='3'/%3E%3Ccircle cx='32' cy='34' r='6' fill='%23c9a84c'/%3E%3C/svg%3E">
+
 <style>
 :root {
   --bg:#080c10; --surface:#0d1318; --surface2:#131c24; --border:#1e2d3d;
@@ -22,29 +27,38 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 ::-webkit-scrollbar{width:4px;} ::-webkit-scrollbar-track{background:var(--bg);} ::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px;}
 
 /* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:20px 48px;border-bottom:1px solid transparent;transition:all .4s;}
-nav.scrolled{background:rgba(8,12,16,.92);border-bottom-color:var(--border);backdrop-filter:blur(16px);}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 48px;border-bottom:1px solid transparent;transition:all .4s;}
+nav.scrolled{background:rgba(8,12,16,.95);border-bottom-color:var(--border);backdrop-filter:blur(16px);}
 .nav-logo{font-family:var(--font-display);font-size:20px;font-weight:900;letter-spacing:.15em;color:var(--gold);text-transform:uppercase;}
 .nav-logo span{color:var(--text2);font-weight:400;font-size:11px;display:block;letter-spacing:.3em;}
 .nav-links{display:flex;gap:36px;}
 .nav-links a{font-family:var(--font-mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--text2);text-decoration:none;transition:color .2s;}
 .nav-links a:hover{color:var(--gold);}
+.nav-right{display:flex;align-items:center;gap:12px;}
 .nav-cta{font-family:var(--font-mono);font-size:11px;letter-spacing:.15em;text-transform:uppercase;background:var(--gold);color:var(--bg);padding:10px 24px;border:none;cursor:pointer;font-weight:500;transition:background .2s;}
 .nav-cta:hover{background:var(--gold2);}
+.nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;}
+.nav-hamburger span{display:block;width:22px;height:2px;background:var(--text2);transition:all .3s;}
+.mobile-menu{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(8,12,16,.98);z-index:99;flex-direction:column;align-items:center;justify-content:center;gap:28px;}
+.mobile-menu.open{display:flex;}
+.mobile-menu a{font-family:var(--font-mono);font-size:16px;letter-spacing:.25em;text-transform:uppercase;color:var(--text2);text-decoration:none;}
+.mobile-menu a:hover{color:var(--gold);}
+.mobile-menu-close{position:absolute;top:20px;right:24px;background:none;border:none;color:var(--text2);font-size:24px;cursor:pointer;}
+.mobile-menu .nav-cta{margin-top:8px;width:200px;text-align:center;}
 
 /* TICKER */
 .ticker-strip{background:var(--surface);border-bottom:1px solid var(--border);overflow:hidden;padding:10px 0;position:relative;}
-.ticker-strip::before,.ticker-strip::after{content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;}
+.ticker-strip::before,.ticker-strip::after{content:'';position:absolute;top:0;bottom:0;width:60px;z-index:2;}
 .ticker-strip::before{left:0;background:linear-gradient(90deg,var(--surface),transparent);}
 .ticker-strip::after{right:0;background:linear-gradient(-90deg,var(--surface),transparent);}
-.ticker-inner{display:flex;gap:52px;animation:ticker 38s linear infinite;white-space:nowrap;}
+.ticker-inner{display:flex;gap:52px;animation:ticker 38s linear infinite;white-space:nowrap;width:max-content;}
 .ticker-inner:hover{animation-play-state:paused;}
 @keyframes ticker{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 .tick-item{display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:11px;}
 .tick-sym{color:var(--text);font-weight:500;letter-spacing:.1em;}
 .tick-price{color:var(--text2);}
 .tick-chg.up{color:var(--green);} .tick-chg.down{color:var(--red);}
-.tick-dot{width:5px;height:5px;border-radius:50%;}
+.tick-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
 .tick-dot.up{background:var(--green);} .tick-dot.down{background:var(--red);}
 
 /* HERO */
@@ -54,66 +68,66 @@ nav.scrolled{background:rgba(8,12,16,.92);border-bottom-color:var(--border);back
 .hero-inner{position:relative;z-index:1;max-width:760px;}
 .hero-eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:24px;display:flex;align-items:center;gap:14px;}
 .hero-eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--gold);}
-h1{font-family:var(--font-display);font-size:clamp(44px,6vw,84px);font-weight:900;line-height:1.03;margin-bottom:28px;}
+h1{font-family:var(--font-display);font-size:clamp(36px,6vw,84px);font-weight:900;line-height:1.03;margin-bottom:28px;}
 h1 em{font-style:italic;color:var(--gold);}
-.hero-sub{color:var(--text2);font-size:17px;max-width:520px;margin-bottom:52px;font-style:italic;line-height:1.8;}
+.hero-sub{color:var(--text2);font-size:clamp(14px,2vw,17px);max-width:520px;margin-bottom:52px;font-style:italic;line-height:1.8;}
 .hero-actions{display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
-.btn-primary{font-family:var(--font-mono);font-size:12px;letter-spacing:.15em;text-transform:uppercase;background:var(--gold);color:var(--bg);padding:16px 44px;border:none;cursor:pointer;font-weight:500;transition:all .2s;}
+.btn-primary{font-family:var(--font-mono);font-size:12px;letter-spacing:.15em;text-transform:uppercase;background:var(--gold);color:var(--bg);padding:14px 36px;border:none;cursor:pointer;font-weight:500;transition:all .2s;}
 .btn-primary:hover{background:var(--gold2);transform:translateY(-1px);}
-.btn-ghost{font-family:var(--font-mono);font-size:12px;letter-spacing:.15em;text-transform:uppercase;background:transparent;color:var(--text2);padding:16px 44px;border:1px solid var(--border);cursor:pointer;transition:all .2s;}
+.btn-ghost{font-family:var(--font-mono);font-size:12px;letter-spacing:.15em;text-transform:uppercase;background:transparent;color:var(--text2);padding:14px 36px;border:1px solid var(--border);cursor:pointer;transition:all .2s;}
 .btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
-.hero-stats{display:flex;gap:48px;margin-top:72px;padding-top:48px;border-top:1px solid var(--border);}
-.hstat-val{font-family:var(--font-display);font-size:36px;font-weight:900;color:var(--gold);margin-bottom:4px;}
-.hstat-lbl{font-family:var(--font-mono);font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--text3);}
+.hero-stats{display:flex;gap:36px;margin-top:60px;padding-top:40px;border-top:1px solid var(--border);flex-wrap:wrap;}
+.hstat-val{font-family:var(--font-display);font-size:clamp(26px,3vw,36px);font-weight:900;color:var(--gold);margin-bottom:4px;}
+.hstat-lbl{font-family:var(--font-mono);font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--text3);}
 
 /* SHARED */
-section{padding:96px 48px;}
+section{padding:80px 48px;}
 .section-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.45em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;}
-h2{font-family:var(--font-display);font-size:clamp(32px,3.5vw,54px);font-weight:700;line-height:1.1;color:var(--text);}
+h2{font-family:var(--font-display);font-size:clamp(28px,3.5vw,54px);font-weight:700;line-height:1.1;color:var(--text);}
 h2 em{font-style:italic;color:var(--text2);}
-.section-header{margin-bottom:64px;}
+.section-header{margin-bottom:52px;}
 .divider{height:1px;background:linear-gradient(90deg,var(--border),transparent);}
 
 /* STRATEGIES */
 #strategies{background:var(--surface);}
 .strats-intro{max-width:580px;color:var(--text2);font-style:italic;margin-top:16px;line-height:1.8;}
 .strat-range{font-family:var(--font-mono);font-size:11px;color:var(--teal);margin-top:8px;letter-spacing:.1em;}
-.strategies-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);margin-top:48px;}
-.strategy-card{background:var(--surface2);padding:36px 24px;position:relative;overflow:hidden;cursor:default;transition:background .25s;}
+.strategies-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);margin-top:40px;}
+.strategy-card{background:var(--surface2);padding:28px 20px;position:relative;overflow:hidden;cursor:default;transition:background .25s;}
 .strategy-card:hover{background:#17232f;}
 .strategy-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent);opacity:0;transition:opacity .3s;}
 .strategy-card:hover::before{opacity:1;}
-.sc-num{font-family:var(--font-mono);font-size:9px;letter-spacing:.3em;color:var(--text3);margin-bottom:20px;text-transform:uppercase;}
-.sc-icon{font-size:26px;display:block;margin-bottom:16px;}
+.sc-num{font-family:var(--font-mono);font-size:9px;letter-spacing:.3em;color:var(--text3);margin-bottom:16px;text-transform:uppercase;}
+.sc-icon{font-size:24px;display:block;margin-bottom:14px;}
 .sc-tier{font-family:var(--font-mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
-.sc-name{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--text);margin-bottom:10px;line-height:1.2;}
-.sc-desc{color:var(--text2);font-size:12px;line-height:1.7;font-style:italic;margin-bottom:24px;}
+.sc-name{font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--text);margin-bottom:10px;line-height:1.2;}
+.sc-desc{color:var(--text2);font-size:12px;line-height:1.7;font-style:italic;margin-bottom:20px;}
 .sc-min{font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-bottom:4px;letter-spacing:.1em;}
 .sc-amount{font-family:var(--font-mono);font-size:14px;color:var(--text);font-weight:500;}
 .sc-max{font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-top:2px;letter-spacing:.1em;}
-.sc-assets{margin-top:20px;display:flex;flex-wrap:wrap;gap:6px;}
-.asset-tag{font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;padding:4px 8px;background:rgba(201,168,76,.08);color:var(--gold);border:1px solid rgba(201,168,76,.2);}
-.sc-ret{margin-top:20px;font-family:var(--font-mono);font-size:20px;color:var(--green);font-weight:500;}
-.sc-ret span{font-size:10px;color:var(--text3);display:block;margin-top:2px;letter-spacing:.15em;}
+.sc-assets{margin-top:16px;display:flex;flex-wrap:wrap;gap:5px;}
+.asset-tag{font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;padding:3px 7px;background:rgba(201,168,76,.08);color:var(--gold);border:1px solid rgba(201,168,76,.2);}
+.sc-ret{margin-top:16px;font-family:var(--font-mono);font-size:20px;color:var(--green);font-weight:500;}
+.sc-ret span{font-size:9px;color:var(--text3);display:block;margin-top:2px;letter-spacing:.15em;}
 
-/* DEPOSIT METHODS */
+/* DEPOSIT */
 #deposit{background:var(--bg);}
-.deposit-layout{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start;}
+.deposit-layout{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start;}
 .deposit-text p{color:var(--text2);font-style:italic;margin-top:16px;line-height:1.8;margin-bottom:32px;}
 .methods-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);}
-.method-card{background:var(--surface2);padding:28px 20px;text-align:center;transition:background .2s;}
+.method-card{background:var(--surface2);padding:24px 16px;text-align:center;transition:background .2s;}
 .method-card:hover{background:#17232f;}
-.method-icon{font-size:28px;display:block;margin-bottom:12px;}
-.method-name{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;}
-.method-desc{font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:.1em;line-height:1.6;}
-.wallet-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:40px;}
-.wallet-card{border:1px solid var(--border);padding:28px 24px;position:relative;overflow:hidden;}
+.method-icon{font-size:26px;display:block;margin-bottom:10px;}
+.method-name{font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.method-desc{font-family:var(--font-mono);font-size:9px;color:var(--text3);letter-spacing:.1em;line-height:1.6;}
+.wallet-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:36px;}
+.wallet-card{border:1px solid var(--border);padding:24px 20px;position:relative;overflow:hidden;}
 .wallet-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:80px;opacity:.06;}
 .wallet-usd::after{background:linear-gradient(to top,var(--gold),transparent);}
 .wallet-usdt::after{background:linear-gradient(to top,var(--teal),transparent);}
-.wc-icon{font-size:22px;margin-bottom:12px;display:block;}
-.wc-name{font-family:var(--font-mono);font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
-.wc-title{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.wc-icon{font-size:20px;margin-bottom:10px;display:block;}
+.wc-name{font-family:var(--font-mono);font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
+.wc-title{font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--text);margin-bottom:8px;}
 .wc-desc{font-size:12px;color:var(--text2);font-style:italic;line-height:1.7;}
 .wc-badge{display:inline-block;font-family:var(--font-mono);font-size:9px;padding:4px 10px;border:1px solid;margin-top:12px;letter-spacing:.15em;text-transform:uppercase;}
 .wc-badge.gold{color:var(--gold);border-color:rgba(201,168,76,.3);}
@@ -121,15 +135,15 @@ h2 em{font-style:italic;color:var(--text2);}
 
 /* KYC */
 #kyc{background:var(--surface);}
-.kyc-layout{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start;}
+.kyc-layout{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start;}
 .kyc-text p{color:var(--text2);font-style:italic;margin-top:16px;line-height:1.8;margin-bottom:8px;}
 .kyc-notice{background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.2);padding:20px 24px;margin-top:24px;font-family:var(--font-mono);font-size:11px;color:var(--gold);letter-spacing:.05em;line-height:1.7;}
 .kyc-notice strong{display:block;margin-bottom:6px;font-size:10px;letter-spacing:.25em;text-transform:uppercase;}
 .kyc-steps{display:flex;flex-direction:column;gap:1px;background:var(--border);}
-.kyc-step{background:var(--surface2);padding:28px 24px;display:flex;gap:20px;align-items:flex-start;transition:background .2s;}
+.kyc-step{background:var(--surface2);padding:22px 20px;display:flex;gap:16px;align-items:flex-start;transition:background .2s;}
 .kyc-step:hover{background:#17232f;}
-.ks-num{font-family:var(--font-mono);font-size:11px;color:var(--gold);min-width:32px;font-weight:500;}
-.ks-title{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.ks-num{font-family:var(--font-mono);font-size:11px;color:var(--gold);min-width:28px;font-weight:500;}
+.ks-title{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;}
 .ks-desc{font-size:12px;color:var(--text2);font-style:italic;line-height:1.7;}
 .ks-badge{display:inline-block;font-family:var(--font-mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;padding:3px 8px;background:rgba(74,222,128,.08);color:var(--green);border:1px solid rgba(74,222,128,.2);margin-top:8px;}
 .ks-badge.req{background:rgba(248,113,113,.08);color:var(--red);border-color:rgba(248,113,113,.2);}
@@ -137,74 +151,110 @@ h2 em{font-style:italic;color:var(--text2);}
 
 /* WITHDRAWAL */
 #withdrawal{background:var(--bg);}
-.withdrawal-note{background:rgba(248,113,113,.05);border:1px solid rgba(248,113,113,.15);padding:20px 28px;margin-bottom:48px;display:flex;gap:16px;align-items:flex-start;}
+.withdrawal-note{background:rgba(248,113,113,.05);border:1px solid rgba(248,113,113,.15);padding:20px 24px;margin-bottom:40px;display:flex;gap:16px;align-items:flex-start;}
 .wn-icon{font-size:20px;margin-top:2px;}
 .wn-text{font-family:var(--font-mono);font-size:11px;color:var(--text2);line-height:1.7;}
 .wn-text strong{color:var(--red);display:block;font-size:10px;letter-spacing:.2em;text-transform:uppercase;margin-bottom:4px;}
 .withdrawal-cols{display:grid;grid-template-columns:1fr 1fr;gap:32px;}
-.wcol-title{font-family:var(--font-mono);font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--text3);margin-bottom:20px;}
+.wcol-title{font-family:var(--font-mono);font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--text3);margin-bottom:16px;}
 .withdrawal-list{display:flex;flex-direction:column;gap:1px;background:var(--border);}
-.withdrawal-item{background:var(--surface2);padding:20px 24px;display:flex;align-items:center;gap:16px;}
-.wi-icon{font-size:20px;}
+.withdrawal-item{background:var(--surface2);padding:18px 20px;display:flex;align-items:center;gap:14px;}
+.wi-icon{font-size:18px;flex-shrink:0;}
 .wi-name{font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px;}
 .wi-detail{font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:.1em;}
 
 /* INSIGHTS */
 #insights{background:var(--surface);}
 .news-grid{display:grid;grid-template-columns:2fr 1fr;gap:24px;}
-.news-featured{background:var(--surface2);border:1px solid var(--border);padding:40px;position:relative;overflow:hidden;}
+.news-featured{background:var(--surface2);border:1px solid var(--border);padding:36px;position:relative;overflow:hidden;}
 .news-featured::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--gold);}
-.news-tag{font-family:var(--font-mono);font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;}
-.news-headline{font-family:var(--font-display);font-size:24px;font-weight:700;line-height:1.3;color:var(--text);margin-bottom:16px;}
-.news-body{color:var(--text2);font-size:14px;font-style:italic;margin-bottom:24px;line-height:1.8;}
+.news-tag{font-family:var(--font-mono);font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;}
+.news-headline{font-family:var(--font-display);font-size:clamp(18px,2vw,24px);font-weight:700;line-height:1.3;color:var(--text);margin-bottom:14px;}
+.news-body{color:var(--text2);font-size:13px;font-style:italic;margin-bottom:20px;line-height:1.8;}
 .news-meta{font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:.15em;}
 .news-list{display:flex;flex-direction:column;gap:1px;background:var(--border);}
-.news-item{background:var(--surface2);padding:22px 20px;cursor:default;transition:background .2s;}
+.news-item{background:var(--surface2);padding:20px 18px;cursor:default;transition:background .2s;}
 .news-item:hover{background:#17232f;}
 .news-item-tag{font-family:var(--font-mono);font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--teal);margin-bottom:8px;}
-.news-item-title{font-family:var(--font-display);font-size:14px;color:var(--text);margin-bottom:8px;line-height:1.4;}
+.news-item-title{font-family:var(--font-display);font-size:13px;color:var(--text);margin-bottom:8px;line-height:1.4;}
 .news-item-meta{font-family:var(--font-mono);font-size:9px;color:var(--text3);}
 
 /* CTA */
-#cta{background:var(--surface2);text-align:center;padding:100px 48px;position:relative;overflow:hidden;}
+#cta{background:var(--surface2);text-align:center;padding:80px 24px;position:relative;overflow:hidden;}
 #cta::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(201,168,76,.07) 0%,transparent 70%);pointer-events:none;}
 .cta-inner{position:relative;z-index:1;max-width:600px;margin:0 auto;}
 .cta-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:24px;}
-.cta-headline{font-family:var(--font-display);font-size:clamp(36px,4vw,58px);font-weight:900;line-height:1.1;margin-bottom:24px;}
-.cta-sub{color:var(--text2);font-style:italic;margin-bottom:48px;}
+.cta-headline{font-family:var(--font-display);font-size:clamp(30px,4vw,58px);font-weight:900;line-height:1.1;margin-bottom:24px;}
+.cta-sub{color:var(--text2);font-style:italic;margin-bottom:40px;font-size:14px;}
 
 /* FOOTER */
-footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 48px 0;display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;}
+footer{background:var(--bg);border-top:1px solid var(--border);padding:52px 48px 0;display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:36px;}
 .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:900;color:var(--gold);letter-spacing:.15em;margin-bottom:12px;}
 .footer-tagline{font-size:12px;color:var(--text3);font-style:italic;line-height:1.8;}
-.footer-col h4{font-family:var(--font-mono);font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--text3);margin-bottom:16px;}
+.footer-col h4{font-family:var(--font-mono);font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;}
 .footer-col a{display:block;font-size:13px;color:var(--text2);text-decoration:none;margin-bottom:10px;transition:color .2s;}
 .footer-col a:hover{color:var(--gold);}
-.footer-bottom{border-top:1px solid var(--border);padding:24px 0;margin-top:48px;display:flex;justify-content:space-between;align-items:center;}
+.footer-bottom{border-top:1px solid var(--border);padding:20px 0;margin-top:40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
 .footer-bottom p{font-family:var(--font-mono);font-size:10px;color:var(--text3);}
 .footer-wrap{padding:0 48px;}
 
 /* ANIMATE */
 @keyframes fadeUp{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
 .fade-up{opacity:0;animation:fadeUp .8s ease forwards;}
-.fade-up:nth-child(1){animation-delay:.1s;} .fade-up:nth-child(2){animation-delay:.25s;} .fade-up:nth-child(3){animation-delay:.4s;} .fade-up:nth-child(4){animation-delay:.55s;}
+.fade-up:nth-child(1){animation-delay:.1s;} .fade-up:nth-child(2){animation-delay:.25s;} .fade-up:nth-child(3){animation-delay:.4s;} .fade-up:nth-child(4){animation-delay:.55s;} .fade-up:nth-child(5){animation-delay:.7s;}
 @keyframes pulse-dot{0%,100%{opacity:1;}50%{opacity:.3;}}
 .live-dot{display:inline-block;width:6px;height:6px;background:var(--green);border-radius:50%;margin-right:6px;animation:pulse-dot 1.5s ease infinite;}
 
+/* ─── RESPONSIVE ─── */
 @media(max-width:1100px){
-  nav{padding:16px 24px;} .nav-links{display:none;}
-  #hero{padding:120px 24px 60px;}
-  section{padding:60px 24px;}
+  nav{padding:14px 20px;}
+  .nav-links{display:none;}
+  .nav-hamburger{display:flex;}
+  #hero{padding:110px 20px 60px;min-height:auto;}
+  section{padding:56px 20px;}
   .strategies-grid{grid-template-columns:repeat(2,1fr);}
   .deposit-layout,.kyc-layout,.withdrawal-cols,.news-grid{grid-template-columns:1fr;}
-  footer{grid-template-columns:1fr 1fr;padding:40px 24px 0;}
-  .footer-wrap{padding:0 24px;}
-  .hero-stats{gap:28px;flex-wrap:wrap;}
+  footer{grid-template-columns:1fr 1fr;padding:36px 20px 0;}
+  .footer-wrap{padding:0 20px;}
+  .hero-stats{gap:20px;}
   .wallet-cards{grid-template-columns:1fr;}
+  .methods-grid{grid-template-columns:1fr;}
+}
+@media(max-width:640px){
+  nav{padding:12px 16px;}
+  .nav-logo{font-size:16px;}
+  .nav-logo span{font-size:9px;}
+  .nav-cta{padding:8px 16px;font-size:10px;}
+  h1{font-size:32px;}
+  #hero{padding:90px 16px 48px;}
+  .hero-eyebrow{font-size:9px;letter-spacing:.25em;}
+  .hero-actions{flex-direction:column;align-items:flex-start;gap:12px;}
+  .btn-primary,.btn-ghost{width:100%;text-align:center;padding:13px 24px;}
+  .hero-stats{gap:16px;margin-top:36px;padding-top:28px;}
+  section{padding:44px 16px;}
+  .strategies-grid{grid-template-columns:1fr;}
+  .news-grid{grid-template-columns:1fr;}
+  footer{grid-template-columns:1fr;padding:28px 16px 0;}
+  .footer-wrap{padding:0 16px;}
+  .footer-bottom{flex-direction:column;text-align:center;}
+  .wallet-cards{grid-template-columns:1fr;}
+  .methods-grid{grid-template-columns:1fr;}
+  .withdrawal-cols{grid-template-columns:1fr;}
+  #cta{padding:52px 16px;}
 }
 </style>
 </head>
 <body>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-menu-close" onclick="closeMobileMenu()">✕</button>
+  <a href="#strategies" onclick="closeMobileMenu()">Strategies</a>
+  <a href="#deposit" onclick="closeMobileMenu()">Deposit</a>
+  <a href="#kyc" onclick="closeMobileMenu()">KYC</a>
+  <a href="#insights" onclick="closeMobileMenu()">Insights</a>
+  <button class="nav-cta" onclick="window.location='dashboard.html'">Client Portal →</button>
+</div>
 
 <!-- NAV -->
 <nav id="nav">
@@ -215,11 +265,16 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 48px
     <a href="#kyc">KYC</a>
     <a href="#insights">Insights</a>
   </div>
-  <button class="nav-cta" onclick="window.location='dashboard.html'">Client Portal →</button>
+  <div class="nav-right">
+    <button class="nav-cta" onclick="window.location='dashboard.html'">Client Portal →</button>
+    <div class="nav-hamburger" onclick="openMobileMenu()" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
 </nav>
 
 <!-- TICKER -->
-<div class="ticker-strip" style="margin-top:64px;">
+<div class="ticker-strip" style="margin-top:56px;">
   <div class="ticker-inner" id="ticker"></div>
 </div>
 
@@ -255,103 +310,84 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 48px
     <p class="strat-range">Min: $200 &nbsp;·&nbsp; Max: $10,000,000 per strategy</p>
   </div>
   <div class="strategies-grid">
-
     <!-- Tier I -->
     <div class="strategy-card">
       <div class="sc-num">Tier I · Conservative</div>
       <span class="sc-icon">◇</span>
       <div class="sc-tier">Tier I</div>
       <div class="sc-name">Stable Reserve</div>
-      <p class="sc-desc">Capital preservation through sovereign bonds, money market instruments, and high-grade corporate debt. Ideal for risk-averse investors seeking steady yield.</p>
+      <p class="sc-desc">Capital preservation through sovereign bonds, money market instruments, and high-grade corporate debt.</p>
       <div class="sc-min">Min. Investment</div>
       <div class="sc-amount">$200</div>
       <div class="sc-max">Max $10,000,000</div>
       <div class="sc-assets">
-        <span class="asset-tag">US Treasuries</span>
-        <span class="asset-tag">T-Bills</span>
-        <span class="asset-tag">Money Market</span>
-        <span class="asset-tag">IG Corporate Bonds</span>
+        <span class="asset-tag">US Treasuries</span><span class="asset-tag">T-Bills</span><span class="asset-tag">Money Market</span><span class="asset-tag">IG Corp Bonds</span>
       </div>
-      <div class="sc-ret">+6.8% <span>Ann. target return</span></div>
+      <div class="sc-ret">+6.8%<span>Annual target · Low risk</span></div>
     </div>
-
     <!-- Tier II -->
     <div class="strategy-card">
       <div class="sc-num">Tier II · Balanced</div>
       <span class="sc-icon">◈</span>
       <div class="sc-tier">Tier II</div>
       <div class="sc-name">Core Dividend</div>
-      <p class="sc-desc">Quality-compounding portfolio of dividend growers, REITs, and blue-chip equities. Delivers consistent income with modest capital appreciation.</p>
+      <p class="sc-desc">Balanced income via dividend growers, REITs, ETFs, and preferred shares for steady cash flow.</p>
       <div class="sc-min">Min. Investment</div>
       <div class="sc-amount">$500</div>
       <div class="sc-max">Max $10,000,000</div>
       <div class="sc-assets">
-        <span class="asset-tag">Dividend Stocks</span>
-        <span class="asset-tag">REITs</span>
-        <span class="asset-tag">ETFs</span>
-        <span class="asset-tag">Preferred Shares</span>
+        <span class="asset-tag">Dividend Stocks</span><span class="asset-tag">REITs</span><span class="asset-tag">ETFs</span><span class="asset-tag">Preferred Shares</span>
       </div>
-      <div class="sc-ret">+11.7% <span>Ann. target return</span></div>
+      <div class="sc-ret">+11.7%<span>Annual target · Med. risk</span></div>
     </div>
-
     <!-- Tier III -->
     <div class="strategy-card">
       <div class="sc-num">Tier III · Growth</div>
       <span class="sc-icon">⬡</span>
       <div class="sc-tier">Tier III</div>
       <div class="sc-name">Alpha Momentum</div>
-      <p class="sc-desc">Systematic trend-following across global equities, commodities, and futures markets. Dynamic position sizing adapts to volatility regimes in real time.</p>
+      <p class="sc-desc">Systematic trend-following across global equities, commodities, and futures contracts.</p>
       <div class="sc-min">Min. Investment</div>
       <div class="sc-amount">$1,000</div>
       <div class="sc-max">Max $10,000,000</div>
       <div class="sc-assets">
-        <span class="asset-tag">Global Equities</span>
-        <span class="asset-tag">Commodities</span>
-        <span class="asset-tag">Futures</span>
-        <span class="asset-tag">Options</span>
+        <span class="asset-tag">Global Equities</span><span class="asset-tag">Commodities</span><span class="asset-tag">Futures</span><span class="asset-tag">Options</span>
       </div>
-      <div class="sc-ret">+18.4% <span>Ann. target return</span></div>
+      <div class="sc-ret">+18.4%<span>Annual target · Med-high risk</span></div>
     </div>
-
     <!-- Tier IV -->
     <div class="strategy-card">
       <div class="sc-num">Tier IV · Aggressive</div>
       <span class="sc-icon">△</span>
       <div class="sc-tier">Tier IV</div>
       <div class="sc-name">Global Macro</div>
-      <p class="sc-desc">Top-down macro-driven allocation across geographies, currencies, and multi-asset classes. Designed for sophisticated investors tolerating higher volatility for outsized return potential.</p>
+      <p class="sc-desc">Top-down macro trades across FX, emerging markets, commodities, and derivatives.</p>
       <div class="sc-min">Min. Investment</div>
       <div class="sc-amount">$5,000</div>
       <div class="sc-max">Max $10,000,000</div>
       <div class="sc-assets">
-        <span class="asset-tag">FX Pairs</span>
-        <span class="asset-tag">EM Equities</span>
-        <span class="asset-tag">Commodities</span>
-        <span class="asset-tag">Derivatives</span>
+        <span class="asset-tag">FX Pairs</span><span class="asset-tag">EM Equities</span><span class="asset-tag">Commodities</span><span class="asset-tag">Derivatives</span>
       </div>
-      <div class="sc-ret">+22.1% <span>Ann. target return</span></div>
+      <div class="sc-ret">+22.1%<span>Annual target · High risk</span></div>
     </div>
-
     <!-- Tier V -->
     <div class="strategy-card">
-      <div class="sc-num">Tier V · DeFi/Crypto</div>
+      <div class="sc-num">Tier V · DeFi</div>
       <span class="sc-icon">⬢</span>
-      <div class="sc-tier">Tier V · Crypto</div>
+      <div class="sc-tier" style="color:var(--teal)">Tier V</div>
       <div class="sc-name">DeFi Yield</div>
-      <p class="sc-desc">High-yield decentralised finance through liquidity provision, staking, and yield farming across vetted protocols. Invested directly in USDT — no fiat conversion required.</p>
+      <p class="sc-desc">Crypto-native liquidity pools, staking, and yield farming on vetted DeFi protocols.</p>
       <div class="sc-min">Min. Investment</div>
-      <div class="sc-amount">$200</div>
+      <div class="sc-amount" style="color:var(--teal)">$200 USDT</div>
       <div class="sc-max">Max $10,000,000</div>
       <div class="sc-assets">
-        <span class="asset-tag">BTC</span>
-        <span class="asset-tag">ETH</span>
-        <span class="asset-tag">USDT Yield</span>
-        <span class="asset-tag">DeFi Protocols</span>
-        <span class="asset-tag">Liquidity Pools</span>
+        <span class="asset-tag" style="border-color:rgba(45,212,191,.3);color:var(--teal);background:rgba(45,212,191,.07)">BTC</span>
+        <span class="asset-tag" style="border-color:rgba(45,212,191,.3);color:var(--teal);background:rgba(45,212,191,.07)">ETH</span>
+        <span class="asset-tag" style="border-color:rgba(45,212,191,.3);color:var(--teal);background:rgba(45,212,191,.07)">USDT Yield</span>
+        <span class="asset-tag" style="border-color:rgba(45,212,191,.3);color:var(--teal);background:rgba(45,212,191,.07)">Liquidity Pools</span>
       </div>
-      <div class="sc-ret">+34.6% <span>Ann. target return</span></div>
+      <div class="sc-ret" style="color:var(--teal)">+34.6%<span style="color:var(--text3)">Annual target · Speculative</span></div>
     </div>
-
   </div>
 </section>
 
@@ -360,46 +396,49 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 48px
 <!-- DEPOSIT -->
 <section id="deposit">
   <div class="section-header">
-    <div class="section-label">Funding Your Account</div>
-    <h2>Deposit <em>before KYC,</em> invest after</h2>
+    <div class="section-label">Fund Your Account</div>
+    <h2>Deposit methods, <em>no KYC required</em></h2>
   </div>
   <div class="deposit-layout">
-    <div class="deposit-text">
-      <p>You can fund your account at any time — KYC verification is not required to deposit. However, to protect your assets and comply with regulations, <strong style="color:var(--text);">withdrawals are only processed after successful KYC completion.</strong></p>
-      <p style="margin-top:12px;">Fiat deposits go into your <strong style="color:var(--gold);">USD Wallet</strong> and are used for Tiers I–IV. Crypto deposits go into your <strong style="color:var(--teal);">USDT Wallet</strong> — Tier V (DeFi) investments draw directly from USDT.</p>
-      <div class="methods-grid" style="margin-top:32px;">
+    <div>
+      <div class="section-label" style="margin-bottom:12px;">Accepted Methods</div>
+      <div class="methods-grid">
         <div class="method-card">
           <span class="method-icon">🏦</span>
           <div class="method-name">Bank Transfer</div>
-          <div class="method-desc">SWIFT / SEPA<br>1–3 business days<br>No platform fee</div>
+          <div class="method-desc">SWIFT / SEPA · 1–3 business days · USD Wallet</div>
         </div>
         <div class="method-card">
           <span class="method-icon">₮</span>
           <div class="method-name">USDT</div>
-          <div class="method-desc">TRC-20 / ERC-20<br>~10 min confirmation<br>Funds USDT Wallet</div>
+          <div class="method-desc">TRC-20 / ERC-20 · ~10 min · USDT Wallet</div>
         </div>
         <div class="method-card">
           <span class="method-icon">₿</span>
           <div class="method-name">Bitcoin</div>
-          <div class="method-desc">BTC Network<br>~30 min confirmation<br>Auto-converted to USDT</div>
+          <div class="method-desc">BTC Network · ~30 min · Auto-converted</div>
         </div>
+      </div>
+      <div class="deposit-text">
+        <p>You can fund your account at any time. Bank transfers credit your USD Wallet. USDT and BTC deposits credit your USDT Wallet. You may invest immediately after deposit — withdrawals require completed KYC.</p>
       </div>
     </div>
     <div>
-      <div class="wallet-cards">
+      <div class="section-label" style="margin-bottom:12px;">Your Wallets</div>
+      <div class="wallet-cards" style="grid-template-columns:1fr;margin-top:0;">
         <div class="wallet-card wallet-usd">
           <span class="wc-icon">💵</span>
-          <div class="wc-name">Primary Wallet</div>
-          <div class="wc-title">USD Wallet</div>
-          <p class="wc-desc">Holds fiat deposits from bank transfers. USD is the investment currency for Tiers I, II, III, and IV strategies. Balances displayed in US Dollars.</p>
+          <div class="wc-name">USD Wallet</div>
+          <div class="wc-title">Primary Fiat Account</div>
+          <div class="wc-desc">Receives bank transfer deposits. Funds Tiers I, II, III, and IV investment strategies.</div>
           <span class="wc-badge gold">Tiers I – IV</span>
         </div>
-        <div class="wallet-card wallet-usdt">
-          <span class="wc-icon">🔷</span>
-          <div class="wc-name">Crypto Wallet</div>
-          <div class="wc-title">USDT Wallet</div>
-          <p class="wc-desc">Holds USDT and converted BTC. Used exclusively for Tier V DeFi/Crypto strategies. All DeFi positions are denominated and settled in USDT.</p>
-          <span class="wc-badge teal">Tier V · DeFi</span>
+        <div class="wallet-card wallet-usdt" style="margin-top:16px;">
+          <span class="wc-icon">💎</span>
+          <div class="wc-name">USDT Wallet</div>
+          <div class="wc-title">Crypto Stablecoin</div>
+          <div class="wc-desc">Receives USDT and BTC deposits. Exclusively funds Tier V DeFi/crypto strategies.</div>
+          <span class="wc-badge teal">Tier V DeFi</span>
         </div>
       </div>
     </div>
@@ -453,7 +492,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 48px
           <div class="ks-num">04</div>
           <div>
             <div class="ks-title">Selfie / Liveness Check</div>
-            <p class="ks-desc">A short liveness check or selfie with your ID confirms identity in real time. Powered by AI document analysis.</p>
+            <p class="ks-desc">A short liveness check or selfie with your ID confirms identity in real time.</p>
             <span class="ks-badge req">Required</span>
           </div>
         </div>
@@ -461,7 +500,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 48px
           <div class="ks-num">05</div>
           <div>
             <div class="ks-title">Enhanced Due Diligence</div>
-            <p class="ks-desc">For Tier V (DeFi) investors or deposits above $100,000, source-of-funds documentation may be requested.</p>
+            <p class="ks-desc">For Tier V investors or deposits above $100,000, source-of-funds documentation may be requested.</p>
             <span class="ks-badge opt">Conditional</span>
           </div>
         </div>
@@ -639,6 +678,10 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 48px
 </div>
 
 <script>
+// MOBILE MENU
+function openMobileMenu(){document.getElementById('mobileMenu').classList.add('open');}
+function closeMobileMenu(){document.getElementById('mobileMenu').classList.remove('open');}
+
 // NAV SCROLL
 window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('scrolled',scrollY>40));
 
@@ -658,13 +701,6 @@ function buildTicker(){
 }
 function updateTicker(){ld=ld.map(t=>({...t,price:parseFloat((t.price*(1+(Math.random()-.497)*.002)).toFixed(2)),chg:parseFloat((t.chg+(Math.random()-.5)*.1).toFixed(2))}));buildTicker();}
 buildTicker();setInterval(updateTicker,3000);
-
-// SERVICE WORKER
-if('serviceWorker' in navigator){
-  const sw=`const C='apex-idx-v1';const A=[self.location.pathname];self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(A)));self.skipWaiting();});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==C).map(k=>caches.delete(k)))));self.clients.claim();});self.addEventListener('fetch',e=>{e.respondWith(fetch(e.request).then(r=>{const cl=r.clone();caches.open(C).then(c=>c.put(e.request,cl));return r;}).catch(()=>caches.match(e.request)));});`;
-  const blob=new Blob([sw],{type:'application/javascript'});
-  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
-}
 </script>
 </body>
 </html>
