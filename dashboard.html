@@ -3,704 +3,920 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>APEX CAPITAL — Investment Intelligence</title>
+<title>APEX CAPITAL — Client Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@300;400;500&family=Libre+Baskerville:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 <!-- FAVICON SVG inline -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23080c10'/%3E%3Cpolygon points='32,8 58,52 6,52' fill='none' stroke='%23c9a84c' stroke-width='3'/%3E%3Ccircle cx='32' cy='34' r='6' fill='%23c9a84c'/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23080c10'/%3E%3Cpolygon points='32,8 58,52 6,52' fill='none' stroke='%23c9a84c' stroke-width='3'/%3E%3Ccircle cx='32' cy='34' r='6' fill='%23c9a84c'/%3E%3C/svg%3E">
 
 <style>
-:root {
-  --bg:#080c10; --surface:#0d1318; --surface2:#131c24; --border:#1e2d3d;
-  --gold:#c9a84c; --gold2:#e8c97a; --teal:#2dd4bf; --red:#f87171; --green:#4ade80;
-  --text:#e8e4dc; --text2:#8a9bb0; --text3:#4a5f72;
+:root{
+  --bg:#080c10;--surface:#0d1318;--surface2:#131c24;--surface3:#17202a;
+  --border:#1e2d3d;--border2:#253547;
+  --gold:#c9a84c;--gold2:#e8c97a;--teal:#2dd4bf;--red:#f87171;--green:#4ade80;--purple:#a78bfa;
+  --text:#e8e4dc;--text2:#8a9bb0;--text3:#4a5f72;
   --font-display:'Playfair Display',Georgia,serif;
   --font-mono:'DM Mono','Courier New',monospace;
-  --font-body:'Libre Baskerville',Georgia,serif;
+  --sidebar:220px;
+  --chart-h:200px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15px;line-height:1.7;overflow-x:hidden;}
-body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:0.35;}
-::-webkit-scrollbar{width:4px;} ::-webkit-scrollbar-track{background:var(--bg);} ::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-mono);font-size:13px;line-height:1.6;display:flex;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.3;}
+::-webkit-scrollbar{width:4px;} ::-webkit-scrollbar-track{background:var(--bg);} ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
 
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 48px;border-bottom:1px solid transparent;transition:all .4s;}
-nav.scrolled{background:rgba(8,12,16,.95);border-bottom-color:var(--border);backdrop-filter:blur(16px);}
-.nav-logo{font-family:var(--font-display);font-size:20px;font-weight:900;letter-spacing:.15em;color:var(--gold);text-transform:uppercase;}
-.nav-logo span{color:var(--text2);font-weight:400;font-size:11px;display:block;letter-spacing:.3em;}
-.nav-links{display:flex;gap:36px;}
-.nav-links a{font-family:var(--font-mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--text2);text-decoration:none;transition:color .2s;}
-.nav-links a:hover{color:var(--gold);}
-.nav-right{display:flex;align-items:center;gap:12px;}
-.nav-cta{font-family:var(--font-mono);font-size:11px;letter-spacing:.15em;text-transform:uppercase;background:var(--gold);color:var(--bg);padding:10px 24px;border:none;cursor:pointer;font-weight:500;transition:background .2s;}
-.nav-cta:hover{background:var(--gold2);}
-.nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;}
-.nav-hamburger span{display:block;width:22px;height:2px;background:var(--text2);transition:all .3s;}
-.mobile-menu{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(8,12,16,.98);z-index:99;flex-direction:column;align-items:center;justify-content:center;gap:28px;}
-.mobile-menu.open{display:flex;}
-.mobile-menu a{font-family:var(--font-mono);font-size:16px;letter-spacing:.25em;text-transform:uppercase;color:var(--text2);text-decoration:none;}
-.mobile-menu a:hover{color:var(--gold);}
-.mobile-menu-close{position:absolute;top:20px;right:24px;background:none;border:none;color:var(--text2);font-size:24px;cursor:pointer;}
-.mobile-menu .nav-cta{margin-top:8px;width:200px;text-align:center;}
+/* SIDEBAR */
+#sidebar{width:var(--sidebar);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;bottom:0;left:0;z-index:50;overflow-y:auto;transition:transform .3s ease;}
+.sb-logo{padding:22px 18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.sb-logo-text{font-family:var(--font-display);font-size:17px;font-weight:900;color:var(--gold);letter-spacing:.15em;}
+.sb-logo-sub{font-size:9px;color:var(--text3);letter-spacing:.3em;margin-top:2px;}
+.sb-close{display:none;background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;padding:2px 6px;}
+.sb-nav{padding:12px 0;flex:1;}
+.sb-section{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--text3);padding:10px 18px 5px;}
+.sb-link{display:flex;align-items:center;gap:10px;padding:10px 18px;color:var(--text2);text-decoration:none;font-size:11px;letter-spacing:.1em;transition:all .15s;cursor:pointer;border-left:2px solid transparent;}
+.sb-link:hover{color:var(--text);background:var(--surface2);}
+.sb-link.active{color:var(--gold);background:rgba(201,168,76,.06);border-left-color:var(--gold);}
+.sb-link span{font-size:14px;}
+.sb-kyc{margin:12px;padding:12px;background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.2);}
+.sb-kyc-title{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:5px;}
+.sb-kyc-text{font-size:10px;color:var(--text2);line-height:1.5;margin-bottom:8px;}
+.sb-kyc-btn{width:100%;padding:7px;background:var(--red);border:none;color:white;font-family:var(--font-mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:opacity .2s;}
+.sb-kyc-btn:hover{opacity:.85;}
+.sb-footer{padding:14px 18px;border-top:1px solid var(--border);font-size:10px;color:var(--text3);}
 
-/* TICKER */
-.ticker-strip{background:var(--surface);border-bottom:1px solid var(--border);overflow:hidden;padding:10px 0;position:relative;}
-.ticker-strip::before,.ticker-strip::after{content:'';position:absolute;top:0;bottom:0;width:60px;z-index:2;}
-.ticker-strip::before{left:0;background:linear-gradient(90deg,var(--surface),transparent);}
-.ticker-strip::after{right:0;background:linear-gradient(-90deg,var(--surface),transparent);}
-.ticker-inner{display:flex;gap:52px;animation:ticker 38s linear infinite;white-space:nowrap;width:max-content;}
-.ticker-inner:hover{animation-play-state:paused;}
-@keyframes ticker{from{transform:translateX(0);}to{transform:translateX(-50%);}}
-.tick-item{display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:11px;}
-.tick-sym{color:var(--text);font-weight:500;letter-spacing:.1em;}
-.tick-price{color:var(--text2);}
-.tick-chg.up{color:var(--green);} .tick-chg.down{color:var(--red);}
-.tick-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
-.tick-dot.up{background:var(--green);} .tick-dot.down{background:var(--red);}
+/* MAIN */
+#main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh;min-width:0;}
 
-/* HERO */
-#hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:140px 48px 80px;position:relative;overflow:hidden;}
-.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 80% 40%,rgba(201,168,76,.07) 0%,transparent 65%),radial-gradient(ellipse 40% 50% at 10% 80%,rgba(45,212,191,.04) 0%,transparent 60%);}
-.hero-grid{position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:64px 64px;opacity:.25;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 20%,transparent 75%);}
-.hero-inner{position:relative;z-index:1;max-width:760px;}
-.hero-eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:24px;display:flex;align-items:center;gap:14px;}
-.hero-eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--gold);}
-h1{font-family:var(--font-display);font-size:clamp(36px,6vw,84px);font-weight:900;line-height:1.03;margin-bottom:28px;}
-h1 em{font-style:italic;color:var(--gold);}
-.hero-sub{color:var(--text2);font-size:clamp(14px,2vw,17px);max-width:520px;margin-bottom:52px;font-style:italic;line-height:1.8;}
-.hero-actions{display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
-.btn-primary{font-family:var(--font-mono);font-size:12px;letter-spacing:.15em;text-transform:uppercase;background:var(--gold);color:var(--bg);padding:14px 36px;border:none;cursor:pointer;font-weight:500;transition:all .2s;}
-.btn-primary:hover{background:var(--gold2);transform:translateY(-1px);}
-.btn-ghost{font-family:var(--font-mono);font-size:12px;letter-spacing:.15em;text-transform:uppercase;background:transparent;color:var(--text2);padding:14px 36px;border:1px solid var(--border);cursor:pointer;transition:all .2s;}
-.btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
-.hero-stats{display:flex;gap:36px;margin-top:60px;padding-top:40px;border-top:1px solid var(--border);flex-wrap:wrap;}
-.hstat-val{font-family:var(--font-display);font-size:clamp(26px,3vw,36px);font-weight:900;color:var(--gold);margin-bottom:4px;}
-.hstat-lbl{font-family:var(--font-mono);font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--text3);}
+/* TOPBAR */
+#topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+.tb-left{display:flex;align-items:center;gap:12px;}
+.tb-hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:4px;}
+.tb-hamburger span{display:block;width:18px;height:2px;background:var(--text2);}
+.tb-title{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--text);}
+.tb-right{display:flex;align-items:center;gap:16px;}
+.live-badge{display:flex;align-items:center;gap:6px;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--green);}
+.live-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 1.5s ease infinite;flex-shrink:0;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.tb-user{font-size:11px;color:var(--text2);}
 
-/* SHARED */
-section{padding:80px 48px;}
-.section-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.45em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;}
-h2{font-family:var(--font-display);font-size:clamp(28px,3.5vw,54px);font-weight:700;line-height:1.1;color:var(--text);}
-h2 em{font-style:italic;color:var(--text2);}
-.section-header{margin-bottom:52px;}
-.divider{height:1px;background:linear-gradient(90deg,var(--border),transparent);}
+/* OVERLAY */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:49;}
+.sidebar-overlay.open{display:block;}
 
-/* STRATEGIES */
-#strategies{background:var(--surface);}
-.strats-intro{max-width:580px;color:var(--text2);font-style:italic;margin-top:16px;line-height:1.8;}
-.strat-range{font-family:var(--font-mono);font-size:11px;color:var(--teal);margin-top:8px;letter-spacing:.1em;}
-.strategies-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);margin-top:40px;}
-.strategy-card{background:var(--surface2);padding:28px 20px;position:relative;overflow:hidden;cursor:default;transition:background .25s;}
-.strategy-card:hover{background:#17232f;}
-.strategy-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent);opacity:0;transition:opacity .3s;}
-.strategy-card:hover::before{opacity:1;}
-.sc-num{font-family:var(--font-mono);font-size:9px;letter-spacing:.3em;color:var(--text3);margin-bottom:16px;text-transform:uppercase;}
-.sc-icon{font-size:24px;display:block;margin-bottom:14px;}
-.sc-tier{font-family:var(--font-mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
-.sc-name{font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--text);margin-bottom:10px;line-height:1.2;}
-.sc-desc{color:var(--text2);font-size:12px;line-height:1.7;font-style:italic;margin-bottom:20px;}
-.sc-min{font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-bottom:4px;letter-spacing:.1em;}
-.sc-amount{font-family:var(--font-mono);font-size:14px;color:var(--text);font-weight:500;}
-.sc-max{font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-top:2px;letter-spacing:.1em;}
-.sc-assets{margin-top:16px;display:flex;flex-wrap:wrap;gap:5px;}
-.asset-tag{font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;padding:3px 7px;background:rgba(201,168,76,.08);color:var(--gold);border:1px solid rgba(201,168,76,.2);}
-.sc-ret{margin-top:16px;font-family:var(--font-mono);font-size:20px;color:var(--green);font-weight:500;}
-.sc-ret span{font-size:9px;color:var(--text3);display:block;margin-top:2px;letter-spacing:.15em;}
+/* PAGES */
+.page{display:none;padding:20px;} .page.active{display:block;}
 
-/* DEPOSIT */
-#deposit{background:var(--bg);}
-.deposit-layout{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start;}
-.deposit-text p{color:var(--text2);font-style:italic;margin-top:16px;line-height:1.8;margin-bottom:32px;}
-.methods-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);}
-.method-card{background:var(--surface2);padding:24px 16px;text-align:center;transition:background .2s;}
-.method-card:hover{background:#17232f;}
-.method-icon{font-size:26px;display:block;margin-bottom:10px;}
-.method-name{font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;}
-.method-desc{font-family:var(--font-mono);font-size:9px;color:var(--text3);letter-spacing:.1em;line-height:1.6;}
-.wallet-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:36px;}
-.wallet-card{border:1px solid var(--border);padding:24px 20px;position:relative;overflow:hidden;}
-.wallet-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:80px;opacity:.06;}
+/* CARDS GRID */
+.cards4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.cards3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.cards2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+.card{background:var(--surface2);border:1px solid var(--border);padding:18px;}
+.card-label{font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
+.card-value{font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.card-delta{font-size:10px;} .card-delta.up{color:var(--green);} .card-delta.down{color:var(--red);}
+.card-sub{font-size:10px;color:var(--text3);margin-top:3px;}
+
+/* CHART CARD — compact, uniform height */
+.chart-card{background:var(--surface2);border:1px solid var(--border);padding:18px;overflow:hidden;}
+.chart-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+.chart-title{font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.chart-sub{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);}
+.chart-tabs{display:flex;gap:3px;flex-shrink:0;}
+.tab-btn{font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;padding:4px 8px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;}
+.tab-btn.active{background:var(--gold);border-color:var(--gold);color:var(--bg);}
+.tab-btn:hover:not(.active){border-color:var(--border2);color:var(--text);}
+
+/* CHART CONTAINERS — fixed height, no overflow */
+.chart-wrap{position:relative;width:100%;height:var(--chart-h);overflow:hidden;}
+.chart-wrap canvas{display:block;width:100%!important;height:100%!important;}
+
+/* CHARTS ROW */
+.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:20px;}
+
+/* PERF LAYOUT */
+.perf-layout{display:grid;grid-template-columns:3fr 1fr;gap:14px;margin-bottom:20px;}
+.perf-layout .chart-wrap{height:220px;}
+
+/* HOLDINGS TABLE */
+.table-card{background:var(--surface2);border:1px solid var(--border);margin-bottom:20px;overflow-x:auto;}
+.table-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.table-title{font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--text);}
+.tbl{width:100%;border-collapse:collapse;min-width:500px;}
+.tbl th{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);padding:10px 16px;text-align:left;border-bottom:1px solid var(--border);}
+.tbl th:not(:first-child){text-align:right;}
+.tbl td{padding:12px 16px;border-bottom:1px solid rgba(30,45,61,.4);color:var(--text2);font-size:11px;}
+.tbl td:not(:first-child){text-align:right;}
+.tbl tr:hover td{background:rgba(19,28,36,.5);}
+.tbl td:first-child{color:var(--text);}
+.val-up{color:var(--green);} .val-dn{color:var(--red);}
+.badge{display:inline-block;font-size:9px;letter-spacing:.1em;padding:2px 6px;border:1px solid;}
+.badge-green{color:var(--green);border-color:rgba(74,222,128,.25);background:rgba(74,222,128,.06);}
+.badge-gold{color:var(--gold);border-color:rgba(201,168,76,.25);background:rgba(201,168,76,.06);}
+.badge-red{color:var(--red);border-color:rgba(248,113,113,.25);background:rgba(248,113,113,.06);}
+.badge-teal{color:var(--teal);border-color:rgba(45,212,191,.25);background:rgba(45,212,191,.06);}
+.badge-gray{color:var(--text3);border-color:var(--border);}
+
+/* STRATEGIES PAGE */
+.strategy-cards{display:flex;flex-direction:column;gap:1px;background:var(--border);}
+.strat-row{background:var(--surface2);padding:20px;display:grid;grid-template-columns:50px 1fr 130px 140px 100px 140px;gap:14px;align-items:center;transition:background .15s;cursor:default;}
+.strat-row:hover{background:var(--surface3);}
+.strat-tier{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);}
+.strat-name{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.strat-desc{font-size:10px;color:var(--text2);line-height:1.5;}
+.strat-assets{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
+.asset-pill{font-size:9px;padding:2px 6px;background:rgba(201,168,76,.07);color:var(--gold);border:1px solid rgba(201,168,76,.15);}
+.strat-range-col{text-align:right;}
+.strat-min{font-size:11px;color:var(--text);}
+.strat-max{font-size:10px;color:var(--text3);margin-top:2px;}
+.strat-ret{font-family:var(--font-display);font-size:18px;color:var(--green);font-weight:700;text-align:right;}
+.strat-ret span{font-size:9px;color:var(--text3);display:block;}
+.invest-btn{font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:9px 14px;background:var(--gold);color:var(--bg);border:none;cursor:pointer;transition:all .15s;width:100%;}
+.invest-btn:hover{background:var(--gold2);}
+.invest-btn.crypto{background:var(--teal);color:var(--bg);}
+
+/* WALLETS */
+.wallets-layout{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px;}
+.wallet-card{background:var(--surface2);border:1px solid var(--border);padding:22px;position:relative;overflow:hidden;}
+.wallet-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:80px;opacity:.05;pointer-events:none;}
 .wallet-usd::after{background:linear-gradient(to top,var(--gold),transparent);}
 .wallet-usdt::after{background:linear-gradient(to top,var(--teal),transparent);}
-.wc-icon{font-size:20px;margin-bottom:10px;display:block;}
-.wc-name{font-family:var(--font-mono);font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
-.wc-title{font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--text);margin-bottom:8px;}
-.wc-desc{font-size:12px;color:var(--text2);font-style:italic;line-height:1.7;}
-.wc-badge{display:inline-block;font-family:var(--font-mono);font-size:9px;padding:4px 10px;border:1px solid;margin-top:12px;letter-spacing:.15em;text-transform:uppercase;}
-.wc-badge.gold{color:var(--gold);border-color:rgba(201,168,76,.3);}
-.wc-badge.teal{color:var(--teal);border-color:rgba(45,212,191,.3);}
+.wc-type{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--text3);margin-bottom:5px;}
+.wc-name{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.wc-bal{font-family:var(--font-display);font-size:30px;font-weight:900;margin:12px 0 3px;}
+.wallet-usd .wc-bal{color:var(--gold);}
+.wallet-usdt .wc-bal{color:var(--teal);}
+.wc-sub{font-size:10px;color:var(--text3);}
+.wc-actions{display:flex;gap:6px;margin-top:16px;flex-wrap:wrap;}
+.wc-btn{flex:1;min-width:70px;padding:8px;font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;}
+.wc-btn:hover{color:var(--text);border-color:var(--border2);}
+.wc-btn.primary{background:var(--gold);border-color:var(--gold);color:var(--bg);}
+.wc-btn.teal{background:var(--teal);border-color:var(--teal);color:var(--bg);}
+
+/* FORM */
+.form-section{background:var(--surface2);border:1px solid var(--border);padding:22px;margin-bottom:18px;}
+.form-title{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--text);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.form-group{margin-bottom:12px;}
+.form-label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;display:block;}
+.form-input,.form-select{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:9px 12px;font-family:var(--font-mono);font-size:12px;outline:none;transition:border-color .15s;}
+.form-input:focus,.form-select:focus{border-color:var(--gold);}
+.form-select option{background:var(--surface);}
+.form-input[type=file]{padding:6px 12px;cursor:pointer;}
+.form-submit{font-family:var(--font-mono);font-size:11px;letter-spacing:.15em;text-transform:uppercase;padding:11px 28px;background:var(--gold);color:var(--bg);border:none;cursor:pointer;transition:background .2s;}
+.form-submit:hover{background:var(--gold2);}
+.form-note{font-size:10px;color:var(--text3);margin-top:5px;line-height:1.6;}
+.info-box{background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.2);padding:14px 16px;margin-bottom:16px;font-size:11px;color:var(--text2);line-height:1.7;}
+.info-box.teal-box{background:rgba(45,212,191,.05);border-color:rgba(45,212,191,.2);}
+.info-box.red-box{background:rgba(248,113,113,.05);border-color:rgba(248,113,113,.2);}
+.info-box strong{color:var(--gold);display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;margin-bottom:4px;}
+.info-box.teal-box strong{color:var(--teal);}
+.info-box.red-box strong{color:var(--red);}
 
 /* KYC */
-#kyc{background:var(--surface);}
-.kyc-layout{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start;}
-.kyc-text p{color:var(--text2);font-style:italic;margin-top:16px;line-height:1.8;margin-bottom:8px;}
-.kyc-notice{background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.2);padding:20px 24px;margin-top:24px;font-family:var(--font-mono);font-size:11px;color:var(--gold);letter-spacing:.05em;line-height:1.7;}
-.kyc-notice strong{display:block;margin-bottom:6px;font-size:10px;letter-spacing:.25em;text-transform:uppercase;}
-.kyc-steps{display:flex;flex-direction:column;gap:1px;background:var(--border);}
-.kyc-step{background:var(--surface2);padding:22px 20px;display:flex;gap:16px;align-items:flex-start;transition:background .2s;}
-.kyc-step:hover{background:#17232f;}
-.ks-num{font-family:var(--font-mono);font-size:11px;color:var(--gold);min-width:28px;font-weight:500;}
-.ks-title{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;}
-.ks-desc{font-size:12px;color:var(--text2);font-style:italic;line-height:1.7;}
-.ks-badge{display:inline-block;font-family:var(--font-mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;padding:3px 8px;background:rgba(74,222,128,.08);color:var(--green);border:1px solid rgba(74,222,128,.2);margin-top:8px;}
-.ks-badge.req{background:rgba(248,113,113,.08);color:var(--red);border-color:rgba(248,113,113,.2);}
-.ks-badge.opt{background:rgba(45,212,191,.08);color:var(--teal);border-color:rgba(45,212,191,.2);}
+.kyc-status-bar{background:var(--surface2);border:1px solid var(--border);padding:16px 20px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.ksb-steps{display:flex;gap:0;flex-wrap:wrap;gap:4px;}
+.ksb-step{display:flex;align-items:center;gap:6px;padding:0 10px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);}
+.ksb-step:not(:last-child)::after{content:'›';margin-left:10px;color:var(--border2);}
+.ksb-step.done{color:var(--green);}
+.ksb-step.active{color:var(--gold);}
+.ksb-dot{width:7px;height:7px;border-radius:50%;background:var(--border2);flex-shrink:0;}
+.ksb-step.done .ksb-dot{background:var(--green);}
+.ksb-step.active .ksb-dot{background:var(--gold);}
+.kyc-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.kyc-step-card{background:var(--surface2);border:1px solid var(--border);padding:20px;}
+.kyc-step-num{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
+.kyc-step-title{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--text);margin-bottom:7px;}
+.kyc-step-desc{font-size:11px;color:var(--text2);line-height:1.7;margin-bottom:12px;}
+.kyc-status-badge{display:inline-flex;align-items:center;gap:5px;font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:4px 9px;border:1px solid;}
 
-/* WITHDRAWAL */
-#withdrawal{background:var(--bg);}
-.withdrawal-note{background:rgba(248,113,113,.05);border:1px solid rgba(248,113,113,.15);padding:20px 24px;margin-bottom:40px;display:flex;gap:16px;align-items:flex-start;}
-.wn-icon{font-size:20px;margin-top:2px;}
-.wn-text{font-family:var(--font-mono);font-size:11px;color:var(--text2);line-height:1.7;}
-.wn-text strong{color:var(--red);display:block;font-size:10px;letter-spacing:.2em;text-transform:uppercase;margin-bottom:4px;}
-.withdrawal-cols{display:grid;grid-template-columns:1fr 1fr;gap:32px;}
-.wcol-title{font-family:var(--font-mono);font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--text3);margin-bottom:16px;}
-.withdrawal-list{display:flex;flex-direction:column;gap:1px;background:var(--border);}
-.withdrawal-item{background:var(--surface2);padding:18px 20px;display:flex;align-items:center;gap:14px;}
-.wi-icon{font-size:18px;flex-shrink:0;}
-.wi-name{font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px;}
-.wi-detail{font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:.1em;}
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(8,12,16,.85);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);width:min(480px,95vw);max-height:90vh;overflow-y:auto;}
+.modal-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.modal-title{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--text);}
+.modal-close{background:transparent;border:none;color:var(--text2);font-size:20px;cursor:pointer;line-height:1;}
+.modal-body{padding:20px;}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;}
+.btn-cancel{font-family:var(--font-mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;padding:9px 18px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;}
 
-/* INSIGHTS */
-#insights{background:var(--surface);}
-.news-grid{display:grid;grid-template-columns:2fr 1fr;gap:24px;}
-.news-featured{background:var(--surface2);border:1px solid var(--border);padding:36px;position:relative;overflow:hidden;}
-.news-featured::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--gold);}
-.news-tag{font-family:var(--font-mono);font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;}
-.news-headline{font-family:var(--font-display);font-size:clamp(18px,2vw,24px);font-weight:700;line-height:1.3;color:var(--text);margin-bottom:14px;}
-.news-body{color:var(--text2);font-size:13px;font-style:italic;margin-bottom:20px;line-height:1.8;}
-.news-meta{font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:.15em;}
-.news-list{display:flex;flex-direction:column;gap:1px;background:var(--border);}
-.news-item{background:var(--surface2);padding:20px 18px;cursor:default;transition:background .2s;}
-.news-item:hover{background:#17232f;}
-.news-item-tag{font-family:var(--font-mono);font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--teal);margin-bottom:8px;}
-.news-item-title{font-family:var(--font-display);font-size:13px;color:var(--text);margin-bottom:8px;line-height:1.4;}
-.news-item-meta{font-family:var(--font-mono);font-size:9px;color:var(--text3);}
-
-/* CTA */
-#cta{background:var(--surface2);text-align:center;padding:80px 24px;position:relative;overflow:hidden;}
-#cta::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(201,168,76,.07) 0%,transparent 70%);pointer-events:none;}
-.cta-inner{position:relative;z-index:1;max-width:600px;margin:0 auto;}
-.cta-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:24px;}
-.cta-headline{font-family:var(--font-display);font-size:clamp(30px,4vw,58px);font-weight:900;line-height:1.1;margin-bottom:24px;}
-.cta-sub{color:var(--text2);font-style:italic;margin-bottom:40px;font-size:14px;}
-
-/* FOOTER */
-footer{background:var(--bg);border-top:1px solid var(--border);padding:52px 48px 0;display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:36px;}
-.footer-logo{font-family:var(--font-display);font-size:22px;font-weight:900;color:var(--gold);letter-spacing:.15em;margin-bottom:12px;}
-.footer-tagline{font-size:12px;color:var(--text3);font-style:italic;line-height:1.8;}
-.footer-col h4{font-family:var(--font-mono);font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;}
-.footer-col a{display:block;font-size:13px;color:var(--text2);text-decoration:none;margin-bottom:10px;transition:color .2s;}
-.footer-col a:hover{color:var(--gold);}
-.footer-bottom{border-top:1px solid var(--border);padding:20px 0;margin-top:40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
-.footer-bottom p{font-family:var(--font-mono);font-size:10px;color:var(--text3);}
-.footer-wrap{padding:0 48px;}
-
-/* ANIMATE */
-@keyframes fadeUp{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
-.fade-up{opacity:0;animation:fadeUp .8s ease forwards;}
-.fade-up:nth-child(1){animation-delay:.1s;} .fade-up:nth-child(2){animation-delay:.25s;} .fade-up:nth-child(3){animation-delay:.4s;} .fade-up:nth-child(4){animation-delay:.55s;} .fade-up:nth-child(5){animation-delay:.7s;}
-@keyframes pulse-dot{0%,100%{opacity:1;}50%{opacity:.3;}}
-.live-dot{display:inline-block;width:6px;height:6px;background:var(--green);border-radius:50%;margin-right:6px;animation:pulse-dot 1.5s ease infinite;}
+/* UTILS */
+.page-title{font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.page-sub{font-size:10px;color:var(--text3);letter-spacing:.1em;margin-bottom:20px;}
+.divider{height:1px;background:var(--border);margin:18px 0;}
+.text-gold{color:var(--gold);}
 
 /* ─── RESPONSIVE ─── */
-@media(max-width:1100px){
-  nav{padding:14px 20px;}
-  .nav-links{display:none;}
-  .nav-hamburger{display:flex;}
-  #hero{padding:110px 20px 60px;min-height:auto;}
-  section{padding:56px 20px;}
-  .strategies-grid{grid-template-columns:repeat(2,1fr);}
-  .deposit-layout,.kyc-layout,.withdrawal-cols,.news-grid{grid-template-columns:1fr;}
-  footer{grid-template-columns:1fr 1fr;padding:36px 20px 0;}
-  .footer-wrap{padding:0 20px;}
-  .hero-stats{gap:20px;}
-  .wallet-cards{grid-template-columns:1fr;}
-  .methods-grid{grid-template-columns:1fr;}
+@media(max-width:1024px){
+  #sidebar{transform:translateX(-100%);}
+  #sidebar.open{transform:translateX(0);}
+  #main{margin-left:0;}
+  .sb-close{display:block;}
+  .tb-hamburger{display:flex;}
+  .cards4{grid-template-columns:repeat(2,1fr);}
+  .cards3{grid-template-columns:repeat(2,1fr);}
+  .charts-row{grid-template-columns:1fr;}
+  .wallets-layout{grid-template-columns:1fr;}
+  .kyc-grid{grid-template-columns:1fr;}
+  .perf-layout{grid-template-columns:1fr;}
+  .strat-row{grid-template-columns:1fr 1fr;}
+  .form-row{grid-template-columns:1fr;}
 }
 @media(max-width:640px){
-  nav{padding:12px 16px;}
-  .nav-logo{font-size:16px;}
-  .nav-logo span{font-size:9px;}
-  .nav-cta{padding:8px 16px;font-size:10px;}
-  h1{font-size:32px;}
-  #hero{padding:90px 16px 48px;}
-  .hero-eyebrow{font-size:9px;letter-spacing:.25em;}
-  .hero-actions{flex-direction:column;align-items:flex-start;gap:12px;}
-  .btn-primary,.btn-ghost{width:100%;text-align:center;padding:13px 24px;}
-  .hero-stats{gap:16px;margin-top:36px;padding-top:28px;}
-  section{padding:44px 16px;}
-  .strategies-grid{grid-template-columns:1fr;}
-  .news-grid{grid-template-columns:1fr;}
-  footer{grid-template-columns:1fr;padding:28px 16px 0;}
-  .footer-wrap{padding:0 16px;}
-  .footer-bottom{flex-direction:column;text-align:center;}
-  .wallet-cards{grid-template-columns:1fr;}
-  .methods-grid{grid-template-columns:1fr;}
-  .withdrawal-cols{grid-template-columns:1fr;}
-  #cta{padding:52px 16px;}
+  :root{--chart-h:180px;}
+  .page{padding:14px;}
+  .cards4{grid-template-columns:1fr 1fr;}
+  .cards3{grid-template-columns:1fr 1fr;}
+  .cards2{grid-template-columns:1fr;}
+  .card{padding:14px;}
+  .card-value{font-size:20px;}
+  .chart-card{padding:14px;}
+  .charts-row{grid-template-columns:1fr;gap:12px;}
+  .strat-row{grid-template-columns:1fr;}
+  .tab-btn{font-size:8px;padding:3px 6px;}
+  .ksb-steps{display:none;}
+}
+@media(max-width:400px){
+  .cards4{grid-template-columns:1fr;}
+  .cards3{grid-template-columns:1fr;}
 }
 </style>
 </head>
 <body>
 
-<!-- MOBILE MENU -->
-<div class="mobile-menu" id="mobileMenu">
-  <button class="mobile-menu-close" onclick="closeMobileMenu()">✕</button>
-  <a href="#strategies" onclick="closeMobileMenu()">Strategies</a>
-  <a href="#deposit" onclick="closeMobileMenu()">Deposit</a>
-  <a href="#kyc" onclick="closeMobileMenu()">KYC</a>
-  <a href="#insights" onclick="closeMobileMenu()">Insights</a>
-  <button class="nav-cta" onclick="window.location='dashboard.html'">Client Portal →</button>
-</div>
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-<!-- NAV -->
-<nav id="nav">
-  <div class="nav-logo">APEX <span>Capital Management</span></div>
-  <div class="nav-links">
-    <a href="#strategies">Strategies</a>
-    <a href="#deposit">Deposit</a>
-    <a href="#kyc">KYC</a>
-    <a href="#insights">Insights</a>
-  </div>
-  <div class="nav-right">
-    <button class="nav-cta" onclick="window.location='dashboard.html'">Client Portal →</button>
-    <div class="nav-hamburger" onclick="openMobileMenu()" id="hamburger">
-      <span></span><span></span><span></span>
-    </div>
-  </div>
-</nav>
-
-<!-- TICKER -->
-<div class="ticker-strip" style="margin-top:56px;">
-  <div class="ticker-inner" id="ticker"></div>
-</div>
-
-<!-- HERO -->
-<section id="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-grid"></div>
-  <div class="hero-inner">
-    <div class="hero-eyebrow fade-up">Institutional Grade Capital Management</div>
-    <h1 class="fade-up">Invest with <em>precision.</em><br>Grow with <em>confidence.</em></h1>
-    <p class="hero-sub fade-up">Five curated investment strategies — from conservative fixed income to high-yield DeFi — with transparent terms, real-time reporting, and institutional safeguards.</p>
-    <div class="hero-actions fade-up">
-      <button class="btn-primary" onclick="window.location='dashboard.html'">Open Account</button>
-      <button class="btn-ghost" onclick="document.getElementById('strategies').scrollIntoView({behavior:'smooth'})">Explore Strategies</button>
-    </div>
-    <div class="hero-stats fade-up">
-      <div><div class="hstat-val">$2.4B+</div><div class="hstat-lbl">Assets Under Management</div></div>
-      <div><div class="hstat-val">4,200+</div><div class="hstat-lbl">Active Investors</div></div>
-      <div><div class="hstat-val">+24.7%</div><div class="hstat-lbl">Average YTD Return</div></div>
-      <div><div class="hstat-val">$200</div><div class="hstat-lbl">Minimum Investment</div></div>
-    </div>
-  </div>
-</section>
-
-<div class="divider"></div>
-
-<!-- STRATEGIES -->
-<section id="strategies">
-  <div class="section-header">
-    <div class="section-label">Investment Strategies</div>
-    <h2>Five tiers of <em>curated performance</em></h2>
-    <p class="strats-intro">Each strategy is a distinct risk-return profile with dedicated asset classes. Minimum investable amount starts at $200, with a platform ceiling of $10,000,000 per position.</p>
-    <p class="strat-range">Min: $200 &nbsp;·&nbsp; Max: $10,000,000 per strategy</p>
-  </div>
-  <div class="strategies-grid">
-    <!-- Tier I -->
-    <div class="strategy-card">
-      <div class="sc-num">Tier I · Conservative</div>
-      <span class="sc-icon">◇</span>
-      <div class="sc-tier">Tier I</div>
-      <div class="sc-name">Stable Reserve</div>
-      <p class="sc-desc">Capital preservation through sovereign bonds, money market instruments, and high-grade corporate debt.</p>
-      <div class="sc-min">Min. Investment</div>
-      <div class="sc-amount">$200</div>
-      <div class="sc-max">Max $10,000,000</div>
-      <div class="sc-assets">
-        <span class="asset-tag">US Treasuries</span><span class="asset-tag">T-Bills</span><span class="asset-tag">Money Market</span><span class="asset-tag">IG Corp Bonds</span>
-      </div>
-      <div class="sc-ret">+6.8%<span>Annual target · Low risk</span></div>
-    </div>
-    <!-- Tier II -->
-    <div class="strategy-card">
-      <div class="sc-num">Tier II · Balanced</div>
-      <span class="sc-icon">◈</span>
-      <div class="sc-tier">Tier II</div>
-      <div class="sc-name">Core Dividend</div>
-      <p class="sc-desc">Balanced income via dividend growers, REITs, ETFs, and preferred shares for steady cash flow.</p>
-      <div class="sc-min">Min. Investment</div>
-      <div class="sc-amount">$500</div>
-      <div class="sc-max">Max $10,000,000</div>
-      <div class="sc-assets">
-        <span class="asset-tag">Dividend Stocks</span><span class="asset-tag">REITs</span><span class="asset-tag">ETFs</span><span class="asset-tag">Preferred Shares</span>
-      </div>
-      <div class="sc-ret">+11.7%<span>Annual target · Med. risk</span></div>
-    </div>
-    <!-- Tier III -->
-    <div class="strategy-card">
-      <div class="sc-num">Tier III · Growth</div>
-      <span class="sc-icon">⬡</span>
-      <div class="sc-tier">Tier III</div>
-      <div class="sc-name">Alpha Momentum</div>
-      <p class="sc-desc">Systematic trend-following across global equities, commodities, and futures contracts.</p>
-      <div class="sc-min">Min. Investment</div>
-      <div class="sc-amount">$1,000</div>
-      <div class="sc-max">Max $10,000,000</div>
-      <div class="sc-assets">
-        <span class="asset-tag">Global Equities</span><span class="asset-tag">Commodities</span><span class="asset-tag">Futures</span><span class="asset-tag">Options</span>
-      </div>
-      <div class="sc-ret">+18.4%<span>Annual target · Med-high risk</span></div>
-    </div>
-    <!-- Tier IV -->
-    <div class="strategy-card">
-      <div class="sc-num">Tier IV · Aggressive</div>
-      <span class="sc-icon">△</span>
-      <div class="sc-tier">Tier IV</div>
-      <div class="sc-name">Global Macro</div>
-      <p class="sc-desc">Top-down macro trades across FX, emerging markets, commodities, and derivatives.</p>
-      <div class="sc-min">Min. Investment</div>
-      <div class="sc-amount">$5,000</div>
-      <div class="sc-max">Max $10,000,000</div>
-      <div class="sc-assets">
-        <span class="asset-tag">FX Pairs</span><span class="asset-tag">EM Equities</span><span class="asset-tag">Commodities</span><span class="asset-tag">Derivatives</span>
-      </div>
-      <div class="sc-ret">+22.1%<span>Annual target · High risk</span></div>
-    </div>
-    <!-- Tier V -->
-    <div class="strategy-card">
-      <div class="sc-num">Tier V · DeFi</div>
-      <span class="sc-icon">⬢</span>
-      <div class="sc-tier" style="color:var(--teal)">Tier V</div>
-      <div class="sc-name">DeFi Yield</div>
-      <p class="sc-desc">Crypto-native liquidity pools, staking, and yield farming on vetted DeFi protocols.</p>
-      <div class="sc-min">Min. Investment</div>
-      <div class="sc-amount" style="color:var(--teal)">$200 USDT</div>
-      <div class="sc-max">Max $10,000,000</div>
-      <div class="sc-assets">
-        <span class="asset-tag" style="border-color:rgba(45,212,191,.3);color:var(--teal);background:rgba(45,212,191,.07)">BTC</span>
-        <span class="asset-tag" style="border-color:rgba(45,212,191,.3);color:var(--teal);background:rgba(45,212,191,.07)">ETH</span>
-        <span class="asset-tag" style="border-color:rgba(45,212,191,.3);color:var(--teal);background:rgba(45,212,191,.07)">USDT Yield</span>
-        <span class="asset-tag" style="border-color:rgba(45,212,191,.3);color:var(--teal);background:rgba(45,212,191,.07)">Liquidity Pools</span>
-      </div>
-      <div class="sc-ret" style="color:var(--teal)">+34.6%<span style="color:var(--text3)">Annual target · Speculative</span></div>
-    </div>
-  </div>
-</section>
-
-<div class="divider"></div>
-
-<!-- DEPOSIT -->
-<section id="deposit">
-  <div class="section-header">
-    <div class="section-label">Fund Your Account</div>
-    <h2>Deposit methods, <em>no KYC required</em></h2>
-  </div>
-  <div class="deposit-layout">
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="sb-logo">
     <div>
-      <div class="section-label" style="margin-bottom:12px;">Accepted Methods</div>
-      <div class="methods-grid">
-        <div class="method-card">
-          <span class="method-icon">🏦</span>
-          <div class="method-name">Bank Transfer</div>
-          <div class="method-desc">SWIFT / SEPA · 1–3 business days · USD Wallet</div>
-        </div>
-        <div class="method-card">
-          <span class="method-icon">₮</span>
-          <div class="method-name">USDT</div>
-          <div class="method-desc">TRC-20 / ERC-20 · ~10 min · USDT Wallet</div>
-        </div>
-        <div class="method-card">
-          <span class="method-icon">₿</span>
-          <div class="method-name">Bitcoin</div>
-          <div class="method-desc">BTC Network · ~30 min · Auto-converted</div>
-        </div>
-      </div>
-      <div class="deposit-text">
-        <p>You can fund your account at any time. Bank transfers credit your USD Wallet. USDT and BTC deposits credit your USDT Wallet. You may invest immediately after deposit — withdrawals require completed KYC.</p>
-      </div>
+      <div class="sb-logo-text">APEX</div>
+      <div class="sb-logo-sub">Capital Management</div>
     </div>
-    <div>
-      <div class="section-label" style="margin-bottom:12px;">Your Wallets</div>
-      <div class="wallet-cards" style="grid-template-columns:1fr;margin-top:0;">
-        <div class="wallet-card wallet-usd">
-          <span class="wc-icon">💵</span>
-          <div class="wc-name">USD Wallet</div>
-          <div class="wc-title">Primary Fiat Account</div>
-          <div class="wc-desc">Receives bank transfer deposits. Funds Tiers I, II, III, and IV investment strategies.</div>
-          <span class="wc-badge gold">Tiers I – IV</span>
-        </div>
-        <div class="wallet-card wallet-usdt" style="margin-top:16px;">
-          <span class="wc-icon">💎</span>
-          <div class="wc-name">USDT Wallet</div>
-          <div class="wc-title">Crypto Stablecoin</div>
-          <div class="wc-desc">Receives USDT and BTC deposits. Exclusively funds Tier V DeFi/crypto strategies.</div>
-          <span class="wc-badge teal">Tier V DeFi</span>
-        </div>
-      </div>
-    </div>
+    <button class="sb-close" onclick="closeSidebar()">✕</button>
   </div>
-</section>
+  <nav class="sb-nav">
+    <div class="sb-section">Main</div>
+    <div class="sb-link active" onclick="nav('overview')"><span>◈</span> Overview</div>
+    <div class="sb-link" onclick="nav('portfolio')"><span>◇</span> Portfolio</div>
+    <div class="sb-link" onclick="nav('strategies')"><span>⬡</span> Strategies</div>
+    <div class="sb-section">Financials</div>
+    <div class="sb-link" onclick="nav('wallets')"><span>◎</span> Wallets</div>
+    <div class="sb-link" onclick="nav('deposit')"><span>↓</span> Deposit</div>
+    <div class="sb-link" onclick="nav('withdraw')"><span>↑</span> Withdraw</div>
+    <div class="sb-section">Account</div>
+    <div class="sb-link" onclick="nav('kyc')"><span>✦</span> KYC Verification</div>
+    <div class="sb-link" onclick="nav('performance')"><span>△</span> Performance</div>
+  </nav>
+  <div id="kyc-sidebar-widget" class="sb-kyc">
+    <div class="sb-kyc-title">⚠ KYC Pending</div>
+    <div class="sb-kyc-text">Verify your identity to enable withdrawals.</div>
+    <button class="sb-kyc-btn" onclick="nav('kyc')">Complete KYC →</button>
+  </div>
+  <div class="sb-footer">
+    <div>John Investor</div>
+    <div style="color:var(--text3);font-size:9px;margin-top:2px;">john@example.com</div>
+    <a href="index.html" style="display:block;margin-top:10px;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);text-decoration:none;">← Back to Site</a>
+  </div>
+</aside>
 
-<div class="divider"></div>
+<!-- MAIN -->
+<main id="main">
+  <div id="topbar">
+    <div class="tb-left">
+      <div class="tb-hamburger" onclick="openSidebar()" id="hamburger">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="tb-title" id="topbar-title">Overview</div>
+    </div>
+    <div class="tb-right">
+      <div class="live-badge"><div class="live-dot"></div><span>Live</span></div>
+      <div class="tb-user" style="display:none" id="tb-user-desk">John Investor</div>
+    </div>
+  </div>
 
-<!-- KYC -->
-<section id="kyc">
-  <div class="section-header">
-    <div class="section-label">Identity Verification</div>
-    <h2>KYC — <em>required to withdraw</em></h2>
-  </div>
-  <div class="kyc-layout">
-    <div class="kyc-text">
-      <p>Know Your Customer (KYC) verification is a mandatory regulatory requirement. You may deposit funds freely before completing KYC, but <strong style="color:var(--text);">all withdrawal requests are locked until verification is approved.</strong></p>
-      <p style="margin-top:16px;">Verification typically completes within 24 hours. Tier V (DeFi) investors are subject to enhanced due diligence due to the crypto-native nature of those strategies.</p>
-      <div class="kyc-notice">
-        <strong>⚠ Important Notice</strong>
-        Deposits are open immediately upon account creation. Withdrawals — including both USD and USDT — are only processed after your KYC status reaches <em>Verified</em>. Incomplete or failed submissions will require resubmission before any funds can be released.
-      </div>
-    </div>
-    <div>
-      <div class="kyc-steps">
-        <div class="kyc-step">
-          <div class="ks-num">01</div>
-          <div>
-            <div class="ks-title">Create Account</div>
-            <p class="ks-desc">Register with email and password. Your account is live immediately — you can deposit and explore strategies.</p>
-            <span class="ks-badge">No documents needed</span>
-          </div>
-        </div>
-        <div class="kyc-step">
-          <div class="ks-num">02</div>
-          <div>
-            <div class="ks-title">Government-Issued ID</div>
-            <p class="ks-desc">Upload a valid passport, national ID, or driver's licence. Both sides required for ID/licence.</p>
-            <span class="ks-badge req">Required</span>
-          </div>
-        </div>
-        <div class="kyc-step">
-          <div class="ks-num">03</div>
-          <div>
-            <div class="ks-title">Proof of Address</div>
-            <p class="ks-desc">Utility bill, bank statement, or official correspondence dated within the last 3 months.</p>
-            <span class="ks-badge req">Required</span>
-          </div>
-        </div>
-        <div class="kyc-step">
-          <div class="ks-num">04</div>
-          <div>
-            <div class="ks-title">Selfie / Liveness Check</div>
-            <p class="ks-desc">A short liveness check or selfie with your ID confirms identity in real time.</p>
-            <span class="ks-badge req">Required</span>
-          </div>
-        </div>
-        <div class="kyc-step">
-          <div class="ks-num">05</div>
-          <div>
-            <div class="ks-title">Enhanced Due Diligence</div>
-            <p class="ks-desc">For Tier V investors or deposits above $100,000, source-of-funds documentation may be requested.</p>
-            <span class="ks-badge opt">Conditional</span>
-          </div>
-        </div>
-        <div class="kyc-step">
-          <div class="ks-num">06</div>
-          <div>
-            <div class="ks-title">Verification Approved</div>
-            <p class="ks-desc">Upon approval you receive full account access — withdrawals enabled, investment positions unlocked.</p>
-            <span class="ks-badge">Withdrawals unlocked</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+  <!-- ═══════════════ OVERVIEW ═══════════════ -->
+  <div class="page active" id="page-overview">
+    <div class="page-title">Good morning, John.</div>
+    <div class="page-sub">Your portfolio snapshot · <span id="live-time"></span></div>
 
-<div class="divider"></div>
+    <div class="cards4">
+      <div class="card">
+        <div class="card-label">Total Portfolio Value</div>
+        <div class="card-value">$102,840</div>
+        <div class="card-delta up">▲ +$12,840 (+14.3%)</div>
+        <div class="card-sub">Since inception</div>
+      </div>
+      <div class="card">
+        <div class="card-label">USD Wallet</div>
+        <div class="card-value" style="color:var(--gold)">$68,200</div>
+        <div class="card-delta up">Available balance</div>
+        <div class="card-sub">Fiat — Tiers I–IV</div>
+      </div>
+      <div class="card">
+        <div class="card-label">USDT Wallet</div>
+        <div class="card-value" style="color:var(--teal)">12,480</div>
+        <div class="card-delta up">≈ $12,480</div>
+        <div class="card-sub">Crypto — Tier V</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Active Strategies</div>
+        <div class="card-value">3</div>
+        <div class="card-delta up">▲ +24.7% avg YTD</div>
+        <div class="card-sub">of 5 available</div>
+      </div>
+    </div>
 
-<!-- WITHDRAWAL -->
-<section id="withdrawal">
-  <div class="section-header">
-    <div class="section-label">Withdrawals</div>
-    <h2>Your money, <em>on your terms</em></h2>
-  </div>
-  <div class="withdrawal-note">
-    <div class="wn-icon">🔒</div>
-    <div class="wn-text">
-      <strong>KYC Required Before Withdrawal</strong>
-      Withdrawal requests submitted before KYC approval are queued and will not be processed until your identity is verified. Approved withdrawals are processed within 1–3 business days for fiat, and within 24 hours for crypto.
-    </div>
-  </div>
-  <div class="withdrawal-cols">
-    <div>
-      <div class="wcol-title">Fiat Withdrawals — USD Wallet</div>
-      <div class="withdrawal-list">
-        <div class="withdrawal-item">
-          <span class="wi-icon">🏦</span>
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-header">
           <div>
-            <div class="wi-name">Bank Transfer (SWIFT)</div>
-            <div class="wi-detail">International · 2–5 business days · Min $100</div>
+            <div class="chart-title">Portfolio Performance</div>
+            <div class="chart-sub"><span class="live-dot" style="display:inline-block"></span>Live · USD Value</div>
+          </div>
+          <div class="chart-tabs" id="overview-tabs">
+            <button class="tab-btn active" onclick="switchPeriod(this,'1W','overview')">1W</button>
+            <button class="tab-btn" onclick="switchPeriod(this,'1M','overview')">1M</button>
+            <button class="tab-btn" onclick="switchPeriod(this,'3M','overview')">3M</button>
+            <button class="tab-btn" onclick="switchPeriod(this,'1Y','overview')">1Y</button>
           </div>
         </div>
-        <div class="withdrawal-item">
-          <span class="wi-icon">🏛</span>
+        <div class="chart-wrap">
+          <canvas id="overviewChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
           <div>
-            <div class="wi-name">Bank Transfer (SEPA)</div>
-            <div class="wi-detail">EUR zone · 1–2 business days · Min $50</div>
+            <div class="chart-title">Allocation</div>
+            <div class="chart-sub">By Strategy</div>
           </div>
         </div>
-        <div class="withdrawal-item">
-          <span class="wi-icon">💳</span>
-          <div>
-            <div class="wi-name">Domestic Wire</div>
-            <div class="wi-detail">Same-day or next day · Min $50</div>
-          </div>
+        <div class="chart-wrap">
+          <canvas id="allocationChart"></canvas>
         </div>
       </div>
     </div>
-    <div>
-      <div class="wcol-title">Crypto Withdrawals — USDT Wallet</div>
-      <div class="withdrawal-list">
-        <div class="withdrawal-item">
-          <span class="wi-icon">₮</span>
-          <div>
-            <div class="wi-name">USDT (TRC-20)</div>
-            <div class="wi-detail">TRON network · ~10 min · Min 50 USDT</div>
-          </div>
-        </div>
-        <div class="withdrawal-item">
-          <span class="wi-icon">₮</span>
-          <div>
-            <div class="wi-name">USDT (ERC-20)</div>
-            <div class="wi-detail">Ethereum network · ~15 min · Min 50 USDT</div>
-          </div>
-        </div>
-        <div class="withdrawal-item">
-          <span class="wi-icon">₿</span>
-          <div>
-            <div class="wi-name">Bitcoin (BTC)</div>
-            <div class="wi-detail">BTC Network · ~30 min · Min 0.001 BTC</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
-<div class="divider"></div>
-
-<!-- INSIGHTS -->
-<section id="insights">
-  <div class="section-header">
-    <div class="section-label">Market Insights</div>
-    <h2>Intelligence, <em>distilled daily</em></h2>
-  </div>
-  <div class="news-grid">
-    <div class="news-featured">
-      <div class="news-tag">▲ Feature Analysis</div>
-      <h3 class="news-headline">Federal Reserve signals a new era for fixed-income allocation as yield curve normalisation accelerates</h3>
-      <p class="news-body">With the yield inversion resolving faster than most consensus models anticipated, portfolios weighted toward duration may find the coming quarter rewarding for the first time in several cycles.</p>
-      <div class="news-meta">APEX RESEARCH DESK · 24 MAR 2026</div>
-    </div>
-    <div class="news-list">
-      <div class="news-item">
-        <div class="news-item-tag">Equities</div>
-        <div class="news-item-title">Tech sector rotation gathers pace as AI infrastructure spend peaks</div>
-        <div class="news-item-meta">22 MAR 2026</div>
+    <div class="table-card">
+      <div class="table-header">
+        <div class="table-title">Active Positions</div>
+        <button class="tab-btn" onclick="nav('strategies')" style="font-size:9px">View Strategies →</button>
       </div>
-      <div class="news-item">
-        <div class="news-item-tag">Commodities</div>
-        <div class="news-item-title">Gold breaks resistance — geopolitical premium bids safe-haven assets</div>
-        <div class="news-item-meta">21 MAR 2026</div>
-      </div>
-      <div class="news-item">
-        <div class="news-item-tag">DeFi</div>
-        <div class="news-item-title">Stablecoin yields compress as liquidity floods back into on-chain protocols</div>
-        <div class="news-item-meta">20 MAR 2026</div>
-      </div>
-      <div class="news-item">
-        <div class="news-item-tag">FX</div>
-        <div class="news-item-title">Dollar index softens; euro gains ground on narrowing growth differential</div>
-        <div class="news-item-meta">19 MAR 2026</div>
-      </div>
+      <table class="tbl">
+        <thead><tr>
+          <th>Strategy</th><th>Tier</th><th>Invested</th><th>Current Value</th><th>P&L</th><th>Return</th><th>Status</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>Alpha Momentum</td><td><span class="badge badge-gold">III</span></td><td>$25,000</td><td>$29,600</td><td class="val-up">+$4,600</td><td class="val-up">+18.4%</td><td><span class="badge badge-green">Active</span></td></tr>
+          <tr><td>Core Dividend</td><td><span class="badge badge-gold">II</span></td><td>$20,000</td><td>$22,340</td><td class="val-up">+$2,340</td><td class="val-up">+11.7%</td><td><span class="badge badge-green">Active</span></td></tr>
+          <tr><td>DeFi Yield</td><td><span class="badge badge-teal">V</span></td><td>10,000 USDT</td><td>13,460 USDT</td><td class="val-up">+3,460 USDT</td><td class="val-up">+34.6%</td><td><span class="badge badge-teal">Active</span></td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
-</section>
 
-<!-- CTA -->
-<section id="cta">
-  <div class="cta-inner">
-    <div class="cta-label">Get Started</div>
-    <h2 class="cta-headline">Begin your journey to <em>superior returns</em></h2>
-    <p class="cta-sub">Deposit from $200. KYC in under 24 hours. Five strategies built for every investor profile.</p>
-    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
-      <button class="btn-primary" onclick="window.location='dashboard.html'">Open Account</button>
-      <button class="btn-ghost" onclick="document.getElementById('kyc').scrollIntoView({behavior:'smooth'})">Learn About KYC</button>
+  <!-- ═══════════════ PORTFOLIO ═══════════════ -->
+  <div class="page" id="page-portfolio">
+    <div class="page-title">Portfolio</div>
+    <div class="page-sub">Holdings, allocation & monthly returns</div>
+    <div class="cards3">
+      <div class="card"><div class="card-label">Total Invested</div><div class="card-value">$90,000</div><div class="card-sub">Across 3 strategies</div></div>
+      <div class="card"><div class="card-label">Unrealised Gain</div><div class="card-value" style="color:var(--green)">+$12,840</div><div class="card-delta up">+14.3% total return</div></div>
+      <div class="card"><div class="card-label">Dividend Income</div><div class="card-value">$3,280</div><div class="card-delta up">+$420 YoY</div></div>
+    </div>
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div><div class="chart-title">Monthly Returns</div><div class="chart-sub">12-Month History</div></div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="barChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div><div class="chart-title">Strategy Split</div><div class="chart-sub">by USD Value</div></div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="portfolioDonut"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="table-card">
+      <div class="table-header"><div class="table-title">Holdings Detail</div></div>
+      <table class="tbl">
+        <thead><tr><th>Asset / Strategy</th><th>Wallet</th><th>Invested</th><th>Value</th><th>Alloc %</th><th>P&L</th></tr></thead>
+        <tbody>
+          <tr><td>Alpha Momentum · Equities</td><td>USD</td><td>$25,000</td><td>$29,600</td><td>28.8%</td><td class="val-up">+$4,600</td></tr>
+          <tr><td>Core Dividend · REITs + Stocks</td><td>USD</td><td>$20,000</td><td>$22,340</td><td>21.7%</td><td class="val-up">+$2,340</td></tr>
+          <tr><td>DeFi Yield · USDT Pools</td><td>USDT</td><td>10,000 USDT</td><td>13,460 USDT</td><td>13.1%</td><td class="val-up">+3,460 USDT</td></tr>
+          <tr><td>USD Wallet (Uninvested)</td><td>USD</td><td>—</td><td>$43,200</td><td>42.0%</td><td>—</td></tr>
+          <tr><td>USDT Wallet (Uninvested)</td><td>USDT</td><td>—</td><td>2,480 USDT</td><td>2.4%</td><td>—</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
-</section>
 
-<!-- FOOTER -->
-<footer>
-  <div>
-    <div class="footer-logo">APEX</div>
-    <p class="footer-tagline">Precision capital management for the discerning investor. Regulated. Transparent. Results-driven.</p>
+  <!-- ═══════════════ STRATEGIES ═══════════════ -->
+  <div class="page" id="page-strategies">
+    <div class="page-title">Investment Strategies</div>
+    <div class="page-sub">Five tiers · Min $200 · Max $10,000,000 per position</div>
+    <div class="info-box">
+      <strong>Deposit Before You Invest</strong>
+      Ensure your USD Wallet has sufficient balance before investing in Tiers I–IV. For Tier V (DeFi), your USDT Wallet must be funded. Withdrawals require completed KYC.
+    </div>
+    <div class="strategy-cards">
+      <div class="strat-row">
+        <div><div class="strat-tier">Tier I</div><span style="font-size:20px">◇</span></div>
+        <div>
+          <div class="strat-name">Stable Reserve</div>
+          <div class="strat-desc">Capital preservation · Sovereign bonds, T-Bills, money market, IG corporate debt</div>
+          <div class="strat-assets"><span class="asset-pill">US Treasuries</span><span class="asset-pill">T-Bills</span><span class="asset-pill">Money Market</span><span class="asset-pill">IG Corp Bonds</span></div>
+        </div>
+        <div class="strat-range-col"><div class="strat-min">$200 – $10M</div><div class="strat-max">Wallet: USD</div></div>
+        <div class="strat-ret">+6.8%<span>Ann. target</span></div>
+        <div><span class="badge badge-green">Low Risk</span></div>
+        <div><button class="invest-btn" onclick="openInvest('Stable Reserve','I','$200','USD')">Invest Now</button></div>
+      </div>
+      <div class="strat-row">
+        <div><div class="strat-tier">Tier II</div><span style="font-size:20px">◈</span></div>
+        <div>
+          <div class="strat-name">Core Dividend</div>
+          <div class="strat-desc">Balanced income · Dividend growers, REITs, ETFs, preferred shares</div>
+          <div class="strat-assets"><span class="asset-pill">Dividend Stocks</span><span class="asset-pill">REITs</span><span class="asset-pill">ETFs</span><span class="asset-pill">Preferred Shares</span></div>
+        </div>
+        <div class="strat-range-col"><div class="strat-min">$500 – $10M</div><div class="strat-max">Wallet: USD</div></div>
+        <div class="strat-ret">+11.7%<span>Ann. target</span></div>
+        <div><span class="badge badge-gold">Med. Risk</span></div>
+        <div><button class="invest-btn" onclick="openInvest('Core Dividend','II','$500','USD')">Invest Now</button></div>
+      </div>
+      <div class="strat-row">
+        <div><div class="strat-tier">Tier III</div><span style="font-size:20px">⬡</span></div>
+        <div>
+          <div class="strat-name">Alpha Momentum</div>
+          <div class="strat-desc">Growth · Systematic trend-following across global equities, commodities, futures</div>
+          <div class="strat-assets"><span class="asset-pill">Global Equities</span><span class="asset-pill">Commodities</span><span class="asset-pill">Futures</span><span class="asset-pill">Options</span></div>
+        </div>
+        <div class="strat-range-col"><div class="strat-min">$1,000 – $10M</div><div class="strat-max">Wallet: USD</div></div>
+        <div class="strat-ret">+18.4%<span>Ann. target</span></div>
+        <div><span class="badge badge-gold">Med-High</span></div>
+        <div><button class="invest-btn" onclick="openInvest('Alpha Momentum','III','$1,000','USD')">Invest Now</button></div>
+      </div>
+      <div class="strat-row">
+        <div><div class="strat-tier">Tier IV</div><span style="font-size:20px">△</span></div>
+        <div>
+          <div class="strat-name">Global Macro</div>
+          <div class="strat-desc">Aggressive · Top-down macro across FX, EM equities, commodities, derivatives</div>
+          <div class="strat-assets"><span class="asset-pill">FX Pairs</span><span class="asset-pill">EM Equities</span><span class="asset-pill">Commodities</span><span class="asset-pill">Derivatives</span></div>
+        </div>
+        <div class="strat-range-col"><div class="strat-min">$5,000 – $10M</div><div class="strat-max">Wallet: USD</div></div>
+        <div class="strat-ret">+22.1%<span>Ann. target</span></div>
+        <div><span class="badge badge-red">High Risk</span></div>
+        <div><button class="invest-btn" onclick="openInvest('Global Macro','IV','$5,000','USD')">Invest Now</button></div>
+      </div>
+      <div class="strat-row">
+        <div><div class="strat-tier" style="color:var(--teal)">Tier V</div><span style="font-size:20px">⬢</span></div>
+        <div>
+          <div class="strat-name">DeFi Yield</div>
+          <div class="strat-desc">Crypto-native · Liquidity pools, staking, yield farming on vetted DeFi protocols</div>
+          <div class="strat-assets">
+            <span class="asset-pill" style="border-color:rgba(45,212,191,.3);color:var(--teal);background:rgba(45,212,191,.07)">BTC</span>
+            <span class="asset-pill" style="border-color:rgba(45,212,191,.3);color:var(--teal);background:rgba(45,212,191,.07)">ETH</span>
+            <span class="asset-pill" style="border-color:rgba(45,212,191,.3);color:var(--teal);background:rgba(45,212,191,.07)">USDT Yield</span>
+            <span class="asset-pill" style="border-color:rgba(45,212,191,.3);color:var(--teal);background:rgba(45,212,191,.07)">Liquidity Pools</span>
+          </div>
+        </div>
+        <div class="strat-range-col"><div class="strat-min" style="color:var(--teal)">$200 USDT – $10M</div><div class="strat-max">Wallet: USDT</div></div>
+        <div class="strat-ret" style="color:var(--teal)">+34.6%<span>Ann. target</span></div>
+        <div><span class="badge badge-red">Speculative</span></div>
+        <div><button class="invest-btn crypto" onclick="openInvest('DeFi Yield','V','$200 USDT','USDT')">Invest USDT</button></div>
+      </div>
+    </div>
   </div>
-  <div class="footer-col">
-    <h4>Strategies</h4>
-    <a href="#strategies">Stable Reserve</a>
-    <a href="#strategies">Core Dividend</a>
-    <a href="#strategies">Alpha Momentum</a>
-    <a href="#strategies">Global Macro</a>
-    <a href="#strategies">DeFi Yield</a>
+
+  <!-- ═══════════════ WALLETS ═══════════════ -->
+  <div class="page" id="page-wallets">
+    <div class="page-title">Wallets</div>
+    <div class="page-sub">Your USD and USDT balances</div>
+    <div class="wallets-layout">
+      <div class="wallet-card wallet-usd">
+        <div class="wc-type">Primary · Fiat</div>
+        <div class="wc-name">USD Wallet</div>
+        <div class="wc-bal">$68,200.00</div>
+        <div class="wc-sub">Available for investment in Tiers I, II, III, IV</div>
+        <div class="wc-actions">
+          <button class="wc-btn primary" onclick="nav('deposit')">Deposit</button>
+          <button class="wc-btn" onclick="nav('withdraw')">Withdraw</button>
+          <button class="wc-btn" onclick="nav('strategies')">Invest</button>
+        </div>
+      </div>
+      <div class="wallet-card wallet-usdt">
+        <div class="wc-type">Crypto · Stablecoin</div>
+        <div class="wc-name">USDT Wallet</div>
+        <div class="wc-bal">12,480 USDT</div>
+        <div class="wc-sub">Used for Tier V DeFi/Crypto strategies only</div>
+        <div class="wc-actions">
+          <button class="wc-btn teal" onclick="nav('deposit')">Deposit USDT</button>
+          <button class="wc-btn" onclick="nav('withdraw')">Withdraw</button>
+          <button class="wc-btn" onclick="nav('strategies')">Invest</button>
+        </div>
+      </div>
+    </div>
+    <div class="table-card">
+      <div class="table-header"><div class="table-title">Transaction History</div></div>
+      <table class="tbl">
+        <thead><tr><th>Date</th><th>Type</th><th>Method</th><th>Amount</th><th>Wallet</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>25 Mar 2026</td><td>Deposit</td><td>Bank Transfer</td><td>$50,000</td><td>USD</td><td><span class="badge badge-green">Confirmed</span></td></tr>
+          <tr><td>22 Mar 2026</td><td>Investment</td><td>Alpha Momentum</td><td>-$25,000</td><td>USD</td><td><span class="badge badge-green">Active</span></td></tr>
+          <tr><td>20 Mar 2026</td><td>Deposit</td><td>USDT TRC-20</td><td>+10,000 USDT</td><td>USDT</td><td><span class="badge badge-green">Confirmed</span></td></tr>
+          <tr><td>18 Mar 2026</td><td>Deposit</td><td>Bank Transfer</td><td>+$20,000</td><td>USD</td><td><span class="badge badge-green">Confirmed</span></td></tr>
+          <tr><td>15 Mar 2026</td><td>Investment</td><td>Core Dividend</td><td>-$20,000</td><td>USD</td><td><span class="badge badge-green">Active</span></td></tr>
+          <tr><td>10 Mar 2026</td><td>Withdrawal</td><td>Bank Transfer</td><td>-$5,000</td><td>USD</td><td><span class="badge badge-red">Blocked — KYC</span></td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
-  <div class="footer-col">
-    <h4>Account</h4>
-    <a href="dashboard.html">Client Portal</a>
-    <a href="#deposit">Deposit</a>
-    <a href="#withdrawal">Withdraw</a>
-    <a href="#kyc">KYC Verification</a>
+
+  <!-- ═══════════════ DEPOSIT ═══════════════ -->
+  <div class="page" id="page-deposit">
+    <div class="page-title">Deposit Funds</div>
+    <div class="page-sub">Fund your account — no KYC required to deposit</div>
+    <div class="info-box">
+      <strong>No KYC Required to Deposit</strong>
+      You can fund your account at any time. Bank transfers credit your USD Wallet. USDT and BTC deposits credit your USDT Wallet. You may invest immediately after deposit, but withdrawals require completed KYC.
+    </div>
+    <div class="cards2">
+      <div class="card"><div class="card-label">USD Wallet Balance</div><div class="card-value" style="color:var(--gold)">$68,200.00</div></div>
+      <div class="card"><div class="card-label">USDT Wallet Balance</div><div class="card-value" style="color:var(--teal)">12,480 USDT</div></div>
+    </div>
+    <div class="form-section">
+      <div class="form-title">New Deposit</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Deposit Method</label>
+          <select class="form-select" id="dep-method" onchange="updateDepositUI()">
+            <option value="bank">Bank Transfer (SWIFT / SEPA)</option>
+            <option value="usdt">USDT (TRC-20 / ERC-20)</option>
+            <option value="btc">Bitcoin (BTC)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Amount</label>
+          <input class="form-input" id="dep-amount" type="number" placeholder="Enter amount" min="0">
+        </div>
+      </div>
+      <div id="dep-bank-info">
+        <div class="info-box">
+          <strong>Bank Transfer Details</strong>
+          Bank: First Apex Bank · Account: 0012-9987-APEX · SWIFT: APEXUS33<br>
+          Reference: <strong style="color:var(--gold)">JOHN-ACC-00421</strong> (include in transfer)<br>
+          Processing time: 1–3 business days · Funds credited to USD Wallet
+        </div>
+      </div>
+      <div id="dep-crypto-info" style="display:none">
+        <div class="info-box teal-box">
+          <strong id="dep-crypto-title">USDT Deposit Address</strong>
+          <span id="dep-crypto-addr">TRC-20: TCQmLvJpMY4nKG8VTefT4sDrU7zBvz1ABC</span><br>
+          <span id="dep-crypto-sub">Funds credited to USDT Wallet · ~10 min confirmation</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes (optional)</label>
+        <input class="form-input" type="text" placeholder="e.g. Quarterly top-up">
+      </div>
+      <button class="form-submit" onclick="alert('Deposit submitted! Check your transaction history for confirmation.')">Submit Deposit</button>
+    </div>
   </div>
-  <div class="footer-col">
-    <h4>Company</h4>
-    <a href="#">About Us</a>
-    <a href="#">Regulatory</a>
-    <a href="#">Risk Disclosures</a>
-    <a href="#">Contact</a>
+
+  <!-- ═══════════════ WITHDRAW ═══════════════ -->
+  <div class="page" id="page-withdraw">
+    <div class="page-title">Withdraw Funds</div>
+    <div class="page-sub">All withdrawals require completed KYC</div>
+    <div class="info-box red-box">
+      <strong>⚠ KYC Required</strong>
+      Your withdrawal request will be queued until your KYC verification is approved. Complete your KYC to unlock withdrawals. <span style="color:var(--gold);cursor:pointer;text-decoration:underline;" onclick="nav('kyc')">Verify now →</span>
+    </div>
+    <div class="cards2">
+      <div class="card"><div class="card-label">USD Available</div><div class="card-value" style="color:var(--gold)">$68,200.00</div><div class="card-sub">Locked until KYC approved</div></div>
+      <div class="card"><div class="card-label">USDT Available</div><div class="card-value" style="color:var(--teal)">12,480 USDT</div><div class="card-sub">Locked until KYC approved</div></div>
+    </div>
+    <div class="form-section">
+      <div class="form-title">Withdrawal Request</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Withdrawal Method</label>
+          <select class="form-select" id="wd-method" onchange="updateWithdrawUI()">
+            <option value="swift">Bank Transfer (SWIFT)</option>
+            <option value="sepa">Bank Transfer (SEPA)</option>
+            <option value="wire">Domestic Wire</option>
+            <option value="usdt-trc">USDT (TRC-20)</option>
+            <option value="usdt-erc">USDT (ERC-20)</option>
+            <option value="btc">Bitcoin (BTC)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Amount</label>
+          <input class="form-input" id="wd-amount" type="number" placeholder="Min. $100">
+        </div>
+      </div>
+      <div id="wd-bank-fields">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Bank Name</label><input class="form-input" type="text" placeholder="Your bank name"></div>
+          <div class="form-group"><label class="form-label">Account Number / IBAN</label><input class="form-input" type="text" placeholder="IBAN or account number"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">SWIFT / BIC Code</label><input class="form-input" type="text" placeholder="e.g. BARCGB22"></div>
+          <div class="form-group"><label class="form-label">Account Holder Name</label><input class="form-input" type="text" placeholder="Name on bank account"></div>
+        </div>
+      </div>
+      <div id="wd-crypto-fields" style="display:none">
+        <div class="form-group"><label class="form-label" id="wd-addr-label">USDT Wallet Address (TRC-20)</label><input class="form-input" type="text" placeholder="Enter destination address"></div>
+      </div>
+      <div class="form-note">Processing: 1–5 business days for fiat · 10–60 min for crypto · Subject to KYC approval</div>
+      <button class="form-submit" style="margin-top:14px;" onclick="alert('Withdrawal queued. Will be processed after KYC verification is approved.')">Request Withdrawal</button>
+    </div>
   </div>
-</footer>
-<div class="footer-wrap">
-  <div class="footer-bottom">
-    <p>© 2026 APEX CAPITAL MANAGEMENT. ALL RIGHTS RESERVED.</p>
-    <p>Past performance does not guarantee future results. Capital at risk.</p>
+
+  <!-- ═══════════════ KYC ═══════════════ -->
+  <div class="page" id="page-kyc">
+    <div class="page-title">KYC Verification</div>
+    <div class="page-sub">Identity verification is required to unlock withdrawals</div>
+    <div class="kyc-status-bar">
+      <div class="ksb-steps">
+        <div class="ksb-step done"><div class="ksb-dot"></div>Account</div>
+        <div class="ksb-step active"><div class="ksb-dot"></div>Documents</div>
+        <div class="ksb-step"><div class="ksb-dot"></div>Liveness</div>
+        <div class="ksb-step"><div class="ksb-dot"></div>Review</div>
+        <div class="ksb-step"><div class="ksb-dot"></div>Verified</div>
+      </div>
+      <div><span class="badge badge-red">KYC Pending</span></div>
+    </div>
+    <div class="info-box red-box">
+      <strong>Withdrawals Locked</strong>
+      All withdrawal requests — USD and USDT — are frozen until your KYC status reaches <em>Verified</em>. Deposits and investments remain open. Verification typically completes within 24 hours of document submission.
+    </div>
+    <div class="kyc-grid">
+      <div class="kyc-step-card">
+        <div class="kyc-step-num">Step 01 · Required</div>
+        <div class="kyc-step-title">Government-Issued ID</div>
+        <p class="kyc-step-desc">Upload a valid passport, national ID card, or driver's licence. Both sides required for ID / licence. Documents must be valid and clearly legible.</p>
+        <div class="form-group"><label class="form-label">Upload Front</label><input class="form-input" type="file" accept="image/*,.pdf"></div>
+        <div class="form-group"><label class="form-label">Upload Back (if applicable)</label><input class="form-input" type="file" accept="image/*,.pdf"></div>
+        <span class="kyc-status-badge" style="color:var(--red);border-color:rgba(248,113,113,.3);">Awaiting Upload</span>
+      </div>
+      <div class="kyc-step-card">
+        <div class="kyc-step-num">Step 02 · Required</div>
+        <div class="kyc-step-title">Proof of Address</div>
+        <p class="kyc-step-desc">Utility bill, bank statement, or government correspondence dated within the last 3 months. Must show your full name and residential address.</p>
+        <div class="form-group"><label class="form-label">Upload Document</label><input class="form-input" type="file" accept="image/*,.pdf"></div>
+        <div class="form-group"><label class="form-label">Document Type</label>
+          <select class="form-select">
+            <option>Utility Bill</option>
+            <option>Bank Statement</option>
+            <option>Government Letter</option>
+            <option>Tax Document</option>
+          </select>
+        </div>
+        <span class="kyc-status-badge" style="color:var(--red);border-color:rgba(248,113,113,.3);">Awaiting Upload</span>
+      </div>
+      <div class="kyc-step-card">
+        <div class="kyc-step-num">Step 03 · Required</div>
+        <div class="kyc-step-title">Selfie / Liveness Check</div>
+        <p class="kyc-step-desc">A photo of yourself holding your ID document, or a short liveness video. This confirms the documents belong to you and are not fraudulently submitted.</p>
+        <div class="form-group"><label class="form-label">Upload Selfie with ID</label><input class="form-input" type="file" accept="image/*,video/*"></div>
+        <p class="form-note" style="margin-bottom:10px;">Ensure your face and ID are both clearly visible. Good lighting required.</p>
+        <span class="kyc-status-badge" style="color:var(--red);border-color:rgba(248,113,113,.3);">Awaiting Upload</span>
+      </div>
+      <div class="kyc-step-card">
+        <div class="kyc-step-num">Step 04 · Conditional</div>
+        <div class="kyc-step-title">Enhanced Due Diligence</div>
+        <p class="kyc-step-desc">Required for Tier V (DeFi) investors, or for cumulative deposits above $100,000. Provide source-of-funds documentation and a brief investment questionnaire.</p>
+        <div class="form-group"><label class="form-label">Source of Funds Document</label><input class="form-input" type="file" accept="image/*,.pdf"></div>
+        <div class="form-group"><label class="form-label">Employment / Business Type</label>
+          <select class="form-select">
+            <option>Employed (Salary)</option>
+            <option>Self-Employed / Business Owner</option>
+            <option>Investment Income</option>
+            <option>Inheritance / Gift</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <span class="kyc-status-badge" style="color:var(--teal);border-color:rgba(45,212,191,.3);">Optional unless triggered</span>
+      </div>
+    </div>
+    <div style="margin-top:16px;text-align:center;">
+      <button class="form-submit" onclick="submitKYC()">Submit KYC Documents</button>
+      <p style="font-size:10px;color:var(--text3);margin-top:10px;">All documents are encrypted and stored in compliance with GDPR and AML regulations. Review takes up to 24 hours.</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════ PERFORMANCE ═══════════════ -->
+  <div class="page" id="page-performance">
+    <div class="page-title">Performance</div>
+    <div class="page-sub">Track record · Returns vs benchmark</div>
+    <div class="cards4">
+      <div class="card"><div class="card-label">YTD Return</div><div class="card-value" style="color:var(--green)">+24.7%</div><div class="card-sub">Portfolio average</div></div>
+      <div class="card"><div class="card-label">Best Strategy</div><div class="card-value" style="color:var(--teal)">DeFi Yield</div><div class="card-delta up">+34.6% YTD</div></div>
+      <div class="card"><div class="card-label">Sharpe Ratio</div><div class="card-value">1.78</div><div class="card-sub">Risk-adjusted</div></div>
+      <div class="card"><div class="card-label">vs S&P 500</div><div class="card-value" style="color:var(--green)">+16.4%</div><div class="card-delta up">Alpha generated</div></div>
+    </div>
+    <div class="perf-layout">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div><div class="chart-title">Cumulative Returns</div><div class="chart-sub">vs S&P 500 Benchmark</div></div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="perfChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header"><div><div class="chart-title">Risk Profile</div><div class="chart-sub">Radar · 6 Metrics</div></div></div>
+        <div class="chart-wrap">
+          <canvas id="radarChart"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="table-card">
+      <div class="table-header"><div class="table-title">Strategy Performance</div></div>
+      <table class="tbl">
+        <thead><tr><th>Strategy</th><th>Tier</th><th>YTD</th><th>1Y</th><th>3Y Ann.</th><th>Sharpe</th><th>Max DD</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Stable Reserve</td><td><span class="badge badge-gold">I</span></td><td class="val-up">+6.4%</td><td class="val-up">+6.8%</td><td class="val-up">+6.1%</td><td>2.14</td><td class="val-dn">-1.2%</td><td><span class="badge badge-gray">Available</span></td></tr>
+          <tr><td>Core Dividend</td><td><span class="badge badge-gold">II</span></td><td class="val-up">+9.2%</td><td class="val-up">+11.7%</td><td class="val-up">+9.4%</td><td>1.44</td><td class="val-dn">-4.8%</td><td><span class="badge badge-green">Active</span></td></tr>
+          <tr><td>Alpha Momentum</td><td><span class="badge badge-gold">III</span></td><td class="val-up">+14.2%</td><td class="val-up">+18.4%</td><td class="val-up">+21.7%</td><td>1.92</td><td class="val-dn">-8.2%</td><td><span class="badge badge-green">Active</span></td></tr>
+          <tr><td>Global Macro</td><td><span class="badge badge-gold">IV</span></td><td class="val-up">+19.1%</td><td class="val-up">+22.1%</td><td class="val-up">+17.3%</td><td>1.78</td><td class="val-dn">-12.1%</td><td><span class="badge badge-gray">Available</span></td></tr>
+          <tr><td>DeFi Yield</td><td><span class="badge badge-teal">V</span></td><td class="val-up">+28.4%</td><td class="val-up">+34.6%</td><td class="val-up">+31.2%</td><td>1.55</td><td class="val-dn">-22.4%</td><td><span class="badge badge-teal">Active</span></td></tr>
+          <tr><td>S&amp;P 500 (Benchmark)</td><td>—</td><td class="val-up">+8.3%</td><td class="val-up">+14.1%</td><td class="val-up">+11.2%</td><td>1.10</td><td class="val-dn">-10.3%</td><td><span class="badge badge-gray">Index</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<!-- INVEST MODAL -->
+<div class="modal-overlay" id="invest-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Invest in Strategy</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-box" id="modal-wallet-info"></div>
+      <div class="form-group">
+        <label class="form-label">Investment Amount</label>
+        <input class="form-input" id="modal-amount" type="number" placeholder="">
+        <div class="form-note" id="modal-amount-note"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Duration</label>
+        <select class="form-select" id="modal-duration">
+          <option>30 days</option>
+          <option>90 days</option>
+          <option selected>180 days</option>
+          <option>1 year</option>
+          <option>Open-ended</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Reinvest Returns?</label>
+        <select class="form-select">
+          <option>Yes — compound automatically</option>
+          <option>No — credit to wallet</option>
+        </select>
+      </div>
+      <p class="form-note">By investing you agree to the strategy risk disclosure. Past performance does not guarantee future results. Capital at risk.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="form-submit" onclick="confirmInvest()">Confirm Investment</button>
+    </div>
   </div>
 </div>
 
 <script>
-// MOBILE MENU
-function openMobileMenu(){document.getElementById('mobileMenu').classList.add('open');}
-function closeMobileMenu(){document.getElementById('mobileMenu').classList.remove('open');}
-
-// NAV SCROLL
-window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('scrolled',scrollY>40));
-
-// TICKER
-const tickers=[
-  {sym:'AAPL',price:197.42,chg:+1.23},{sym:'MSFT',price:412.18,chg:+2.07},{sym:'NVDA',price:878.34,chg:+8.92},
-  {sym:'GOOGL',price:161.82,chg:-0.44},{sym:'AMZN',price:186.23,chg:+1.74},{sym:'TSLA',price:224.56,chg:-3.18},
-  {sym:'BTC',price:74821,chg:+1243},{sym:'ETH',price:3847.22,chg:+84.5},{sym:'GLD',price:2342.8,chg:+12.4},
-  {sym:'SPY',price:5482.3,chg:+32.1},{sym:'QQQ',price:474.91,chg:+5.23},{sym:'USDT',price:1.00,chg:0.00},
-];
-let ld=JSON.parse(JSON.stringify(tickers));
-function fmt(n){return n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
-function buildTicker(){
-  const el=document.getElementById('ticker');
-  const d=[...ld,...ld];
-  el.innerHTML=d.map(t=>{const up=t.chg>=0;return`<div class="tick-item"><div class="tick-dot ${up?'up':'down'}"></div><span class="tick-sym">${t.sym}</span><span class="tick-price">$${fmt(t.price)}</span><span class="tick-chg ${up?'up':'down'}">${up?'+':''}${fmt(t.chg)}</span></div>`;}).join('');
+// ── MOBILE SIDEBAR ──
+function openSidebar(){
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebarOverlay').classList.add('open');
 }
-function updateTicker(){ld=ld.map(t=>({...t,price:parseFloat((t.price*(1+(Math.random()-.497)*.002)).toFixed(2)),chg:parseFloat((t.chg+(Math.random()-.5)*.1).toFixed(2))}));buildTicker();}
-buildTicker();setInterval(updateTicker,3000);
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+}
+
+// ── UTILITIES ──
+function rnd(a,b){return Math.random()*(b-a)+a;}
+function fmt(n){return n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function genWalk(n,start,vol=.015){let v=start,a=[v];for(let i=1;i<n;i++){v*=1+(Math.random()-.47)*vol;a.push(parseFloat(v.toFixed(2)));}return a;}
+function timeLabels(n,u='day'){const now=new Date(),a=[];for(let i=n-1;i>=0;i--){const d=new Date(now-i*(u==='week'?604800000:86400000));a.push(d.toLocaleDateString([],{month:'short',day:'numeric'}));}return a;}
+
+// ── LIVE TIME ──
+function updateTime(){const el=document.getElementById('live-time');if(el)el.textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' UTC';}
+setInterval(updateTime,1000);updateTime();
+
+// ── NAV ──
+const titles={overview:'Overview',portfolio:'Portfolio',strategies:'Strategies',wallets:'Wallets',deposit:'Deposit Funds',withdraw:'Withdraw Funds',kyc:'KYC Verification',performance:'Performance'};
+function nav(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));
+  document.querySelectorAll('.sb-link').forEach(l=>{if(l.textContent.trim().toLowerCase().includes(id.toLowerCase().replace('-',' ')))l.classList.add('active');});
+  document.getElementById('topbar-title').textContent=titles[id]||id;
+  window.scrollTo(0,0);
+  closeSidebar();
+}
+
+// ── CHART DEFAULTS ──
+const CD={plugins:{legend:{display:false},tooltip:{backgroundColor:'#0d1318',borderColor:'#1e2d3d',borderWidth:1,titleColor:'#8a9bb0',bodyColor:'#e8e4dc'}},scales:{x:{ticks:{color:'#4a5f72',font:{family:"'DM Mono'",size:8},maxTicksLimit:6},grid:{color:'rgba(30,45,61,.4)'},border:{dash:[4,4]}},y:{ticks:{color:'#4a5f72',font:{family:"'DM Mono'",size:8}},grid:{color:'rgba(30,45,61,.4)'},border:{dash:[4,4]},position:'right'}},responsive:true,maintainAspectRatio:false};
+
+// ── OVERVIEW CHART ──
+const ovPeriods={'1W':{data:genWalk(35,90000,.008),labels:timeLabels(35,'day')},'1M':{data:genWalk(30,82000,.012),labels:timeLabels(30,'day')},'3M':{data:genWalk(13,78000,.018),labels:timeLabels(13,'week')},'1Y':{data:genWalk(52,72000,.025),labels:timeLabels(52,'week')}};
+const ovCtx=document.getElementById('overviewChart').getContext('2d');
+const mkGrad=(ctx,c1,c2)=>{const g=ctx.createLinearGradient(0,0,0,180);g.addColorStop(0,c1);g.addColorStop(1,c2);return g;};
+const ovChart=new Chart(ovCtx,{type:'line',data:{labels:ovPeriods['1W'].labels,datasets:[{data:ovPeriods['1W'].data,borderColor:'#4ade80',borderWidth:2,pointRadius:0,fill:true,backgroundColor:mkGrad(ovCtx,'rgba(74,222,128,.15)','rgba(74,222,128,0)'),tension:.4}]},options:{...CD,plugins:{...CD.plugins,tooltip:{...CD.plugins.tooltip,callbacks:{label:c=>'$'+fmt(c.raw)}}}}});
+function switchPeriod(btn,p,group){document.querySelectorAll(`#${group}-tabs .tab-btn`).forEach(b=>b.classList.remove('active'));btn.classList.add('active');if(group==='overview'){ovChart.data.labels=ovPeriods[p].labels;ovChart.data.datasets[0].data=ovPeriods[p].data;ovChart.update();}}
+setInterval(()=>{const d=ovChart.data.datasets[0].data;const last=d[d.length-1];d.shift();d.push(parseFloat((last*(1+(Math.random()-.497)*.002)).toFixed(2)));ovChart.update('none');},3000);
+
+// ── ALLOCATION DONUT ──
+new Chart(document.getElementById('allocationChart'),{type:'doughnut',data:{labels:['Alpha Momentum','Core Dividend','DeFi Yield','USD Uninvested','USDT Uninvested'],datasets:[{data:[28.8,21.7,13.1,42.0,2.4],backgroundColor:['#c9a84c','#4ade80','#2dd4bf','#253547','#1e2d3d'],borderWidth:0,hoverOffset:4}]},options:{plugins:{legend:{display:true,position:'bottom',labels:{color:'#8a9bb0',font:{family:"'DM Mono'",size:8},boxWidth:7,padding:8}},tooltip:{backgroundColor:'#0d1318',borderColor:'#1e2d3d',borderWidth:1,bodyColor:'#e8e4dc',callbacks:{label:c=>c.label+': '+c.raw+'%'}}},cutout:'68%',responsive:true,maintainAspectRatio:false}});
+
+// ── BAR CHART ──
+const months=['Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'];
+const bv=[2.1,3.4,-.8,4.2,1.9,2.7,-1.2,5.1,3.8,1.4,2.9,4.6];
+new Chart(document.getElementById('barChart'),{type:'bar',data:{labels:months,datasets:[{data:bv,backgroundColor:bv.map(v=>v>=0?'rgba(74,222,128,.7)':'rgba(248,113,113,.7)'),borderColor:bv.map(v=>v>=0?'#4ade80':'#f87171'),borderWidth:1,borderRadius:2}]},options:{plugins:{legend:{display:false},tooltip:{backgroundColor:'#0d1318',borderColor:'#1e2d3d',borderWidth:1,bodyColor:'#e8e4dc',callbacks:{label:c=>(c.raw>=0?'+':'')+c.raw+'%'}}},scales:{x:{ticks:{color:'#4a5f72',font:{family:"'DM Mono'",size:8}},grid:{display:false}},y:{ticks:{color:'#4a5f72',font:{family:"'DM Mono'",size:8},callback:v=>v+'%'},grid:{color:'rgba(30,45,61,.4)'},border:{dash:[4,4]}}},responsive:true,maintainAspectRatio:false}});
+
+// ── PORTFOLIO DONUT ──
+new Chart(document.getElementById('portfolioDonut'),{type:'doughnut',data:{labels:['Alpha Momentum','Core Dividend','DeFi Yield'],datasets:[{data:[29600,22340,13460],backgroundColor:['#c9a84c','#4ade80','#2dd4bf'],borderWidth:0,hoverOffset:4}]},options:{plugins:{legend:{display:true,position:'bottom',labels:{color:'#8a9bb0',font:{family:"'DM Mono'",size:8},boxWidth:7,padding:8}},tooltip:{backgroundColor:'#0d1318',borderColor:'#1e2d3d',borderWidth:1,bodyColor:'#e8e4dc',callbacks:{label:c=>c.label+': $'+fmt(c.raw)}}},cutout:'68%',responsive:true,maintainAspectRatio:false}});
+
+// ── PERF CHART ──
+const perfLabels=Array.from({length:36},(_,i)=>{const d=new Date(2023,3+i,1);return d.toLocaleDateString([],{month:'short',year:'2-digit'});});
+const apexD=genWalk(36,100,.04);const benchD=genWalk(36,100,.025);
+const perfCtx=document.getElementById('perfChart').getContext('2d');
+new Chart(perfCtx,{type:'line',data:{labels:perfLabels,datasets:[{label:'Apex Portfolio',data:apexD,borderColor:'#c9a84c',borderWidth:2,pointRadius:0,fill:true,backgroundColor:(ctx)=>{const g=ctx.chart.ctx.createLinearGradient(0,0,0,200);g.addColorStop(0,'rgba(201,168,76,.1)');g.addColorStop(1,'rgba(201,168,76,0)');return g;},tension:.4},{label:'S&P 500',data:benchD,borderColor:'#4a5f72',borderWidth:1.5,pointRadius:0,fill:false,tension:.4,borderDash:[5,3]}]},options:{plugins:{legend:{display:true,labels:{color:'#8a9bb0',font:{family:"'DM Mono'",size:8},boxWidth:12,padding:10}},tooltip:{mode:'index',intersect:false,backgroundColor:'#0d1318',borderColor:'#1e2d3d',borderWidth:1,titleColor:'#8a9bb0',bodyColor:'#e8e4dc'}},scales:{x:{ticks:{color:'#4a5f72',font:{family:"'DM Mono'",size:8},maxTicksLimit:8},grid:{color:'rgba(30,45,61,.4)'},border:{dash:[4,4]}},y:{ticks:{color:'#4a5f72',font:{family:"'DM Mono'",size:8}},grid:{color:'rgba(30,45,61,.4)'},border:{dash:[4,4]},position:'right'}},responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false}}});
+
+// ── RADAR CHART ──
+new Chart(document.getElementById('radarChart'),{type:'radar',data:{labels:['Return','Sharpe','Low Vol','Drawdown','Consistency','Liquidity'],datasets:[{label:'Apex',data:[88,84,72,80,85,95],borderColor:'#c9a84c',backgroundColor:'rgba(201,168,76,.1)',borderWidth:2,pointBackgroundColor:'#c9a84c',pointRadius:3},{label:'Benchmark',data:[68,60,65,65,70,95],borderColor:'#4a5f72',backgroundColor:'rgba(74,95,114,.07)',borderWidth:1.5,pointBackgroundColor:'#4a5f72',pointRadius:3,borderDash:[4,3]}]},options:{plugins:{legend:{display:true,labels:{color:'#8a9bb0',font:{family:"'DM Mono'",size:8},boxWidth:8,padding:8}}},scales:{r:{angleLines:{color:'rgba(30,45,61,.6)'},grid:{color:'rgba(30,45,61,.6)'},pointLabels:{color:'#8a9bb0',font:{family:"'DM Mono'",size:8}},ticks:{display:false},min:0,max:100}},responsive:true,maintainAspectRatio:false}});
+
+// ── DEPOSIT UI ──
+function updateDepositUI(){
+  const m=document.getElementById('dep-method').value;
+  document.getElementById('dep-bank-info').style.display=m==='bank'?'block':'none';
+  document.getElementById('dep-crypto-info').style.display=m!=='bank'?'block':'none';
+  if(m==='usdt'){document.getElementById('dep-crypto-title').textContent='USDT Deposit Address';document.getElementById('dep-crypto-addr').textContent='TRC-20: TCQmLvJpMY4nKG8VTefT4sDrU7zBvz1ABC';document.getElementById('dep-crypto-sub').textContent='Funds credited to USDT Wallet · ~10 min';}
+  if(m==='btc'){document.getElementById('dep-crypto-title').textContent='Bitcoin Deposit Address';document.getElementById('dep-crypto-addr').textContent='BTC: bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh';document.getElementById('dep-crypto-sub').textContent='Auto-converted to USDT · ~30 min';}
+}
+
+// ── WITHDRAW UI ──
+function updateWithdrawUI(){
+  const m=document.getElementById('wd-method').value;
+  const crypto=['usdt-trc','usdt-erc','btc'].includes(m);
+  document.getElementById('wd-bank-fields').style.display=crypto?'none':'block';
+  document.getElementById('wd-crypto-fields').style.display=crypto?'block':'none';
+  const lbls={'usdt-trc':'USDT Wallet Address (TRC-20)','usdt-erc':'USDT Wallet Address (ERC-20)','btc':'Bitcoin Address'};
+  if(crypto)document.getElementById('wd-addr-label').textContent=lbls[m];
+}
+
+// ── INVEST MODAL ──
+let activeStrat={};
+function openInvest(name,tier,min,wallet){
+  activeStrat={name,tier,min,wallet};
+  document.getElementById('modal-title').textContent='Invest in '+name+' (Tier '+tier+')';
+  const isCrypto=wallet==='USDT';
+  document.getElementById('modal-wallet-info').innerHTML=`<strong>${isCrypto?'USDT WALLET':'USD WALLET'}</strong>Investment will be drawn from your ${isCrypto?'<span style="color:var(--teal)">USDT Wallet (12,480 USDT available)</span>':'<span style="color:var(--gold)">USD Wallet ($68,200 available)</span>'}. Withdrawals require completed KYC.`;
+  document.getElementById('modal-wallet-info').className='info-box '+(isCrypto?'teal-box':'');
+  document.getElementById('modal-amount').placeholder='Min. '+min;
+  document.getElementById('modal-amount-note').textContent='Minimum: '+min+' · Maximum: $10,000,000';
+  document.getElementById('invest-modal').classList.add('show');
+}
+function closeModal(){document.getElementById('invest-modal').classList.remove('show');}
+function confirmInvest(){
+  const amt=document.getElementById('modal-amount').value;
+  if(!amt||parseFloat(amt)<=0){alert('Please enter a valid amount.');return;}
+  closeModal();
+  alert(`Investment of ${amt} ${activeStrat.wallet} in ${activeStrat.name} submitted successfully!`);
+}
+document.getElementById('invest-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+
+// ── KYC SUBMIT ──
+function submitKYC(){
+  document.getElementById('kyc-sidebar-widget').className='sb-kyc';
+  document.getElementById('kyc-sidebar-widget').innerHTML=`<div class="sb-kyc-title" style="color:var(--gold)">⏳ KYC Under Review</div><div class="sb-kyc-text">Documents submitted. Review within 24h.</div>`;
+  alert('KYC documents submitted! Your verification is under review. You will be notified within 24 hours.');
+}
+
+// ── RESPONSIVE: show tb-user on wider screens ──
+function checkWidth(){
+  const d=document.getElementById('tb-user-desk');
+  if(d)d.style.display=window.innerWidth>768?'block':'none';
+}
+window.addEventListener('resize',checkWidth);checkWidth();
 </script>
 </body>
 </html>
